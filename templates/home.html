@@ -1,0 +1,193 @@
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
+    <meta name="generator" content="Hugo 0.88.1">
+    <title>Cadastro socioecon&ocirc;mico - Cachoeira Paulista/SP</title>
+
+    <link rel="canonical" href="https://getbootstrap.com/docs/5.1/examples/navbar-fixed/">
+
+    
+
+    <!-- Bootstrap core CSS -->
+<link href="https://getbootstrap.com/docs/5.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+
+    <!-- Favicons -->
+<link rel="apple-touch-icon" href="https://getbootstrap.com/docs/5.1/assets/img/favicons/apple-touch-icon.png" sizes="180x180">
+<link rel="icon" href="https://getbootstrap.com/docs/5.1/assets/img/favicons/favicon-32x32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="https://getbootstrap.com/docs/5.1/assets/img/favicons/favicon-16x16.png" sizes="16x16" type="image/png">
+<link rel="manifest" href="https://getbootstrap.com/docs/5.1/assets/img/favicons/manifest.json">
+<link rel="mask-icon" href="https://getbootstrap.com/docs/5.1/assets/img/favicons/safari-pinned-tab.svg" color="#7952b3">
+<link rel="icon" href="https://getbootstrap.com/docs/5.1/assets/img/favicons/favicon.ico">
+<meta name="theme-color" content="#7952b3">
+
+
+    <style>
+      .bd-placeholder-img {
+        font-size: 1.125rem;
+        text-anchor: middle;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        user-select: none;
+      }
+
+      @media (min-width: 768px) {
+        .bd-placeholder-img-lg {
+          font-size: 3.5rem;
+        }
+      }
+    </style>
+
+    
+    <!-- Custom styles for this template -->
+    <link href="https://getbootstrap.com/docs/5.1/examples/navbar-fixed/navbar-top-fixed.css" rel="stylesheet">
+  </head>
+  <body>
+    
+<nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#">Cadastro socioecon&ocirc;mico</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarCollapse">
+      <ul class="navbar-nav me-auto mb-2 mb-md-0">
+        <li class="nav-item">
+          <a class="nav-link active" aria-current="page" href="#">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('cadastro_cidadao') }}">Cadastro</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('registro') }}">Registro</a>
+        </li>
+        <li class="nav-item">
+          <a href="{{ url_for('logout') }}" class="nav-link">Logout</a>
+        </li>
+      </ul>
+      <!-- <form class="d-flex">
+        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+        <button class="btn btn-outline-success" type="submit">Search</button>
+      </form> !-->
+    </div>
+  </div>
+</nav>
+
+<main class="container">
+  <div class="bg-light p-5 rounded">
+    <h1>Olá, {{ nome }}</h1>
+    <p class="lead">Aperta o botão abaixo para cadastrar um novo cidadão, clique na linha da tabela para visualizar informações a respeito do cidadão selecionado.</p>
+    <a class="btn btn-lg btn-primary" href="{{ url_for('cadastro_cidadao') }}" role="button">Cadastrar nova(o) cidad&atilde;(o) &raquo;</a>
+    
+    <!-- Ai, ai... hora de construir tabela !-->
+    {% if not not listaPessoas %}
+    <form method="post" action="{{ url_for('home') }}" id="consultar">
+      <input type="hidden" value="" id="selecao" name="selecao">
+    </form>
+    <hr class="my-4">
+    <form method="post" action="{{ url_for('home') }}" id="atualizar">
+      <input type="hidden" value="{{id_selecao}}" id="selecao_update" name="selecao_update">
+    <div class="row g-3">
+      <div class="col-sm-4">
+        <h3>Lista de Cidadãos Cadastrados</h3>
+      </div>
+        <div class="col-sm-2">
+          <input type="date" class="form-control" id="data_nova" name="data_nova" placeholder="09/03/1880" value="" required>
+          <div class="invalid-feedback">
+            A data é obrigatória!
+          </div>              
+        </div>
+        <div class="col-sm-2 align-self-start">
+          <label for="botao" class="form-label"></label>
+          <input type="submit" class="btn btn-md btn-primary" id="atualizar_data" name="atualizar_data" value="Atualizar Data">
+        </div>
+        <div class="col-sm-4 align-self-end">
+          <h3 class="text-primary">{{msg}}</h3>
+        </div>
+      <div class="col-sm-12">
+        <table class="table table-hover" id="tabela-cidadaos">
+          <thead class="table-dark">
+            <tr>
+              <th>ID</th>
+              <th>Nome</th>
+              <th>RG</th>
+              <th>CPF</th>
+              <th>Última retirada cesta básica</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for pessoa in listaPessoas %}
+            {% if id_selecao|string in pessoa['id']|string %}
+              <tr class='table-warning'>
+            {% else %}
+              <tr>
+            {% endif %}
+                <td>{{pessoa['id']}}</td>
+                <td>{{pessoa['nome']}}</td>
+                <td>{{pessoa['rg']}}</td>
+                <td>{{pessoa['cpf']}}</td>
+                <td>
+                  {% for data in ultimasDatas %}
+                    
+                    {% if pessoa['id']|string in data['id_cidadao']|string %}
+                      {{ data['ultimo_dia'] }}
+                    {% endif %}
+
+                  {% endfor %}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </form>
+    {% endif %}
+
+    {% if not not dadosPessoais %}
+    <hr class="my-4">
+    <div class="row g-3">
+      <h3>Detalhes:</h3>
+    </div> 
+    <div class="row g-3">
+      <div class="col-sm-6">
+        <p><span class="fw-bold">Nis: </span>{{dadosPessoais['nis']}}</p>
+        <p><span class="fw-bold">Sus: </span>{{dadosPessoais['sus']}}</p>
+        <p><span class="fw-bold">Data de nascimento: </span>{{dadosPessoais['data_nascimento']}}</p>
+        <p><span class="fw-bold">Telefone: </span>{{dadosPessoais['telefone']}}</p>
+        <p><span class="fw-bold">Celular: </span>{{dadosPessoais['celular']}}</p>
+        <p><span class="fw-bold">Cidade Natal: </span>{{dadosPessoais['cidade_natal']}}/{{dadosPessoais['uf_natal']}}</p>
+        <p><span class="fw-bold">Estado Civil: </span>{{dadosPessoais['estado_civil']}}</p>
+        <p><span class="fw-bold">Profissão: </span>{{dadosPessoais['profissao']}}</p>
+        <p><span class="fw-bold">Renda Familiar (SM): </span>{{dadosPessoais['renda_familiar_sm']}}</p>
+        <p><span class="fw-bold">Escolaridade: </span>{{dadosPessoais['escolaridade']}}</p>
+        <p><span class="fw-bold">Religião: </span>{{dadosPessoais['religiao']}}</p>
+        <p><span class="fw-bold">Observações: </span>{{dadosPessoais['observacoes']}}</p>
+      </div>
+    </div>    
+    {% endif %}
+  </div>
+
+
+
+</main>
+
+
+    <script src="https://getbootstrap.com/docs/5.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <script type="text/javascript">
+      $('#tabela-cidadaos tbody tr').click(function() {
+          $(this).addClass('table-warning').siblings().removeClass('table-warning');
+          $("#selecao").val($(this).find("td:first").html())
+          //$("#selecao_update").val($(this).find("td:first").html())
+          $('#consultar').submit()
+      });
+      </script>
+      
+  </body>
+</html>
