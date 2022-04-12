@@ -9,11 +9,17 @@ app=Flask(__name__)
 app.secret_key = 'your secret key'
 
 # Enter your database connection details below
-app.config['MYSQL_HOST']='sql10.freesqldatabase.com'
+#app.config['MYSQL_HOST']='sql10.freesqldatabase.com'
+#app.config['MYSQL_PORT']=3306
+#app.config['MYSQL_USER']='sql10454178'
+#app.config['MYSQL_PASSWORD']='WGUqxJtXhD'
+#app.config['MYSQL_DB']='sql10454178'
+
+app.config['MYSQL_HOST']='localhost'
 app.config['MYSQL_PORT']=3306
-app.config['MYSQL_USER']='sql10454178'
-app.config['MYSQL_PASSWORD']='WGUqxJtXhD'
-app.config['MYSQL_DB']='sql10454178'
+app.config['MYSQL_USER']='root'
+app.config['MYSQL_PASSWORD']='Yasmin'
+app.config['MYSQL_DB']='cadastro_socioeconomico'
 
 # Intialize MySQL
 mysql = MySQL(app)
@@ -215,7 +221,7 @@ def cadastro_cidadao():
         msg = 'Gravado com sucesso!'
 
     if 'loggedin' in session:
-        return render_template('formulario-cidadao.html', msg=msg, escolaridade=escolaridade, estadocivil=estadocivil, religiao=religiao, beneficios=beneficios, servicos_saude=servicos_saude, cultura_lazer=cultura_lazer, imovel=imovel, transporte=transporte, situacao_saude=situacao_saude)
+        return render_template('formulario-cidadao (completo).jinja', msg=msg, escolaridade=escolaridade, estadocivil=estadocivil, religiao=religiao, beneficios=beneficios, servicos_saude=servicos_saude, cultura_lazer=cultura_lazer, imovel=imovel, transporte=transporte, situacao_saude=situacao_saude)
     else:
         return render_template('index.html', msg='')
 
