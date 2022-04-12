@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, session
 from flask_mysqldb import MySQL
 import MySQLdb.cursors
-import re
+from conexaoBD import executarConsulta
 
 app=Flask(__name__)
 
@@ -59,12 +59,12 @@ def login():
         # Create variables for easy access
         username = request.form['username']
         password = request.form['password']
-        # Check if account exists using MySQL
-        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-        cursor.execute('SELECT * FROM accounts WHERE email = %s AND senha = MD5(%s)', (username, password,))
-        # Fetch one record and return result
-        account = cursor.fetchone()
+        # Check if account exists using SQLite
+        sql = "SELECT * FROM accounts WHERE email like '" + username + "' AND senha like MD5('" + password + "')"
+        print(sql)
+        account = executarConsulta('Database.db', sql)
         # If account exists in accounts table in out database
+        print(account)
         if account:
             # Create session data, we can access this data in other routes
             session['loggedin'] = True

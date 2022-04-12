@@ -589,7 +589,7 @@
 			}    
 
       $("#add").click(function() {
-        console.log('afs');
+        $("#familia tbody").append('<tr><th><input class="form-control" type="text"></th><th><input class="form-control" type="text"></th><th class="align-self-center"><select class="form-select"><option value="">Selecione...</option>{% for valor in estadocivil %}<option value="{{valor["id"]}}">{{valor["descricao"]}}</option>{% endfor %}</select></th><th><input type="text" class="form-control"></th><th><input type="date" class="form-control" class="form-control" placeholder="09/03/1880" value="" style="width:170px"></th><th><select class="form-select"><option value="">Selecione...</option>{% for valor in escolaridade %}<option value="{{valor["id"]}}">{{valor["descricao"]}}</option>{% endfor %}</select></th><th><input type="text" class="form-control"></th><th style="text-align:center; vertical-align:middle;"><input type="checkbox" class="form-check-input align-self-center"></th><th><select class="form-select"><option value="">Selecione...</option>{% for valor in situacao_saude %}<option value="{{valor["id"]}}">{{valor["descricao"]}}</option>{% endfor %}</select></th></th></tr>');
       });
     </script>
   </body>
