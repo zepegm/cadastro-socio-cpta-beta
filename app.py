@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, session
 from flask_mysqldb import MySQL
 import MySQLdb.cursors
 from conexaoBD import executarConsulta
+from Hash import MD5
 
 app=Flask(__name__)
 
@@ -60,17 +61,15 @@ def login():
         username = request.form['username']
         password = request.form['password']
         # Check if account exists using SQLite
-        sql = "SELECT * FROM accounts WHERE email like '" + username + "' AND senha like MD5('" + password + "')"
-        print(sql)
+        sql = "SELECT * FROM accounts WHERE email like '" + username + "' AND senha like '" + MD5(password) + "'"
         account = executarConsulta('Database.db', sql)
         # If account exists in accounts table in out database
-        print(account)
         if account:
             # Create session data, we can access this data in other routes
             session['loggedin'] = True
-            session['id'] = account['id']
-            session['nome'] = account['nome']
-            session['email'] = account['email']
+            session['id'] = account[0]
+            session['nome'] = account[1]
+            session['email'] = account[3]
             # Redirect to home page
             return redirect(url_for('home'))
         else:
