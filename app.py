@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, session
 from flask_mysqldb import MySQL
 import MySQLdb.cursors
-from conexaoBD import executarConsulta
+from conexaoBD import executarConsulta, inserirDadosBasico
 from Hash import MD5
 
 app=Flask(__name__)
@@ -231,10 +231,13 @@ def registro():
             nome = request.form['nome']
             email = request.form['email']
             senha = request.form['senha']
-            cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-            cursor.execute('INSERT INTO accounts VALUES(null, %s, MD5(%s), %s)', (nome, senha, email))
-            mysql.connection.commit()
-            msg = 'Registro efetuado com suesso!'
+            
+            try:
+                inserirDadosBasico('Database.db', 'INSERT INTO accounts VALUES(null, "' + nome + '", "' + MD5(senha) + '", "' + email + '")')
+                msg = 'Registro efetuado com suesso!'
+            except:
+                pass
+                msg = 'Erro fatal ao tentar registrar um usuário.'
             return render_template('registro.html', msg=msg)
 
         return render_template('registro.html', msg='')

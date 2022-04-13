@@ -7,3 +7,9 @@ def executarConsulta(banco, sql):
     cursor.execute(sql)
 
     return cursor.fetchone()
+
+def inserirDadosBasico(banco, sql):
+    conn = sqlite3.connect(banco)
+    cursor = conn.cursor()
+    cursor.execute(sql)
+    conn.commit()    
