@@ -1,8 +1,7 @@
+from conexaoBD import Conexao
 from flask import Flask, render_template, request, redirect, url_for, session
 from flask_mysqldb import MySQL
 import MySQLdb.cursors
-from conexaoBD import executarConsulta, inserirDadosBasico
-from Hash import MD5
 
 app=Flask(__name__)
 
@@ -10,20 +9,17 @@ app=Flask(__name__)
 app.secret_key = 'your secret key'
 
 # Enter your database connection details below
-#app.config['MYSQL_HOST']='sql10.freesqldatabase.com'
-#app.config['MYSQL_PORT']=3306
-#app.config['MYSQL_USER']='sql10454178'
-#app.config['MYSQL_PASSWORD']='WGUqxJtXhD'
-#app.config['MYSQL_DB']='sql10454178'
-
 app.config['MYSQL_HOST']='localhost'
 app.config['MYSQL_PORT']=3306
 app.config['MYSQL_USER']='root'
 app.config['MYSQL_PASSWORD']='Yasmin'
 app.config['MYSQL_DB']='cadastro_socioeconomico'
 
+cred = {'HOST':'ec2-34-197-84-74.compute-1.amazonaws.com', 'PORT':5432, 'USER':'piendkrxzduecj', 'PASSWORD':'5af529088848fd2537e0c97f22469dc181a79b2a1cfcc98de6959275e13cab3d', 'DB':'do5a2tog3uf07'}
+
 # Intialize MySQL
 mysql = MySQL(app)
+banco = Conexao(cred)
 
 def popularCombo(tabela):
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
@@ -61,20 +57,21 @@ def login():
         username = request.form['username']
         password = request.form['password']
         # Check if account exists using SQLite
-        sql = "SELECT * FROM accounts WHERE email like '" + username + "' AND senha like '" + MD5(password) + "'"
-        account = executarConsulta('Database.db', sql)
+        sql = 'select * from "CadastroPrefeitura".accounts WHERE email like ' + "'" +  username + "' AND senha like MD5('" + password + "')"
+        account = banco.consultar(sql)
         # If account exists in accounts table in out database
         if account:
+            print(account)
             # Create session data, we can access this data in other routes
             session['loggedin'] = True
-            session['id'] = account[0]
-            session['nome'] = account[1]
-            session['email'] = account[3]
+            session['id'] = account[0][0]
+            session['nome'] = account[0][1]
+            session['email'] = account[0][3]
             # Redirect to home page
             return redirect(url_for('home'))
         else:
             # Account doesnt exist or username/password incorrect
-            msg = 'Incorrect username/password!'
+            msg = 'E-mail/senha incorreto(s)!'
     # Show the login form with message (if any)
     return render_template('index.html', msg=msg)
 
@@ -233,10 +230,11 @@ def registro():
             senha = request.form['senha']
             
             try:
-                inserirDadosBasico('Database.db', 'INSERT INTO accounts VALUES(null, "' + nome + '", "' + MD5(senha) + '", "' + email + '")')
-                msg = 'Registro efetuado com suesso!'
+                if banco.manipular("INSERT INTO \"CadastroPrefeitura\".accounts(nome, senha, email) VALUES('{}', MD5('{}'), '{}')".format(nome, senha, email)):
+                    msg = 'Registro efetuado com suesso!'
+                else:
+                    msg = 'Erro fatal ao tentar registrar um usuário.'    
             except:
-                pass
                 msg = 'Erro fatal ao tentar registrar um usuário.'
             return render_template('registro.html', msg=msg)
 
