@@ -1,15 +1,32 @@
-import sqlite3
+class Conexao(object):
+   _db=None
+   def __init__(self, mhost, db, usr, pwd):
+    self._db = psycopg2.connect(host=mhost, database=db, user=usr,  password=pwd)
+    def manipular(self, sql):
+        try:
+            cur=self._db.cursor()
+            cur.execute(sql)
+            cur.close()
+            self._db.commit()
+        except:
+            return False
+        return True
 
-def executarConsulta(banco, sql):
-    conn = sqlite3.connect(banco)
-    cursor = conn.cursor()
-    #print(sql)
-    cursor.execute(sql)
+def consultar(self, sql):
+    rs=None
+    try:
+        cur=self._db.cursor()
+        cur.execute(sql)
+        rs=cur.fetchall()
+    except:
+        return None
+    return rs
 
-    return cursor.fetchone()
-
-def inserirDadosBasico(banco, sql):
-    conn = sqlite3.connect(banco)
-    cursor = conn.cursor()
-    cursor.execute(sql)
-    conn.commit()    
+def proximaPK(self, tabela, chave):
+     sql='select max('+chave+') from '+tabela
+     rs = self.consultar(sql)
+     pk = rs[0][0]
+     return pk+1
+     
+def fechar(self):
+     self._db.close()
