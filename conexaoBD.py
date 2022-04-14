@@ -22,6 +22,7 @@ class Conexao(object):
             cur=self._db.cursor()
             cur.execute(sql)
             rs=cur.fetchall()
+            cur.close()
         except:
             return None
         return rs

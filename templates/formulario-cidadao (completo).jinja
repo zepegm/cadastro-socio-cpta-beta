@@ -57,7 +57,7 @@
     <div class="collapse navbar-collapse" id="navbarCollapse">
       <ul class="navbar-nav me-auto mb-2 mb-md-0">
         <li class="nav-item">
-          <a class="nav-link" href="{{ url_for('home') }}" aria-current="page" href="#">Home</a>
+          <a class="nav-link" href="{{ url_for('home') }}">Início</a>
         </li>
         <li class="nav-item">
           <a class="nav-link active" href="{{ url_for('cadastro_cidadao') }}">Cadastro</a>
@@ -66,7 +66,7 @@
           <a class="nav-link" href="{{ url_for('registro') }}">Registro</a>
         </li>
         <li class="nav-item">
-          <a href="{{ url_for('logout') }}" class="nav-link">Logout</a>
+          <a href="{{ url_for('logout') }}" class="nav-link">Sair</a>
         </li>
       </ul>
       <form class="d-flex">
@@ -222,7 +222,7 @@
               <select class="form-select" id="escolaridade" name="escolaridade">
                 <option value="">Selecione...</option>
                 {% for valor in escolaridade %}
-                  <option value="{{valor['id']}}">{{valor['descricao']}}</option>
+                  <option value="{{valor[0]}}">{{valor[1]}}</option>
                 {% endfor %}
               </select>
             </div>
@@ -259,7 +259,7 @@
               <select class="form-select" id="estado_civil" name="estado_civil">
                 <option value="">Selecione...</option>
                 {% for valor in estadocivil %}
-                <option value="{{valor['id']}}">{{valor['descricao']}}</option>
+                <option value="{{valor[0]}}">{{valor[1]}}</option>
                 {% endfor %}                
               </select>
             </div>
@@ -269,7 +269,7 @@
               <select class="form-select" id="religiao" name="religiao">
                 <option value="">Selecione...</option>
                 {% for valor in religiao %}
-                <option value="{{valor['id']}}">{{valor['religiao']}}</option>
+                <option value="{{valor[0]}}">{{valor[1]}}</option>
                 {% endfor %}                 
               </select>
             </div>
@@ -304,8 +304,8 @@
               <div class="list-group">
                 {% for valor in beneficios %}
                 <label class="list-group-item">
-                  <input class="form-check-input me-1" type="checkbox" value="{{valor['id']}}" name="beneficios">
-                  {{valor['beneficio']}}
+                  <input class="form-check-input me-1" type="checkbox" value="{{valor[0]}}" name="beneficios">
+                  {{valor[1]}}
                 </label>
                 {% endfor %}
               </div>
@@ -315,8 +315,8 @@
               <div class="list-group">
                 {% for valor in servicos_saude %}
                 <label class="list-group-item">
-                  <input class="form-check-input me-1" type="checkbox" value="{{valor['id']}}" name="servicos_saude">
-                  {{valor['servico']}}
+                  <input class="form-check-input me-1" type="checkbox" value="{{valor[0]}}" name="servicos_saude">
+                  {{valor[1]}}
                 </label>
                 {% endfor %}
               </div>
@@ -326,8 +326,8 @@
               <div class="list-group">
                 {% for valor in cultura_lazer %}
                 <label class="list-group-item">
-                  <input class="form-check-input me-1" type="checkbox" value="{{valor['id']}}" name="cultura_lazer">
-                  {{valor['tipo']}}
+                  <input class="form-check-input me-1" type="checkbox" value="{{valor[0]}}" name="cultura_lazer">
+                  {{valor[1]}}
                 </label>
                 {% endfor %}
               </div>
@@ -343,7 +343,7 @@
               <select class="form-select" id="imovel" name="imovel" required>
                 <option value="">Selecione...</option>
                 {% for valor in imovel %}
-                  <option value="{{valor['id']}}">{{valor['descricao']}}</option>
+                  <option value="{{valor[0]}}">{{valor[1]}}</option>
                 {% endfor %}
               </select>
               <div class="invalid-feedback">
@@ -393,13 +393,13 @@
                 <tbody>
                   {% for valor in transporte %}
                     <tr>
-                      <td>{{valor['descricao']}}</td>
+                      <td>{{valor[1]}}</td>
                       <td>
-                        <input class="form-check-input me-1" type="checkbox" value="{{valor['id']}}">
+                        <input class="form-check-input me-1" type="checkbox" value="{{valor[0]}}">
                         Tem?
                       </td>
                       <td>
-                        <input class="form-check-input me-1" type="checkbox" value="{{valor['id']}}">
+                        <input class="form-check-input me-1" type="checkbox" value="{{valor[0]}}">
                         Necessita?                        
                       </td>
                     </tr>
@@ -589,7 +589,7 @@
 			}    
 
       $("#add").click(function() {
-        $("#familia tbody").append('<tr><th><input class="form-control" type="text"></th><th><input class="form-control" type="text"></th><th class="align-self-center"><select class="form-select"><option value="">Selecione...</option>{% for valor in estadocivil %}<option value="{{valor["id"]}}">{{valor["descricao"]}}</option>{% endfor %}</select></th><th><input type="text" class="form-control"></th><th><input type="date" class="form-control" class="form-control" placeholder="09/03/1880" value="" style="width:170px"></th><th><select class="form-select"><option value="">Selecione...</option>{% for valor in escolaridade %}<option value="{{valor["id"]}}">{{valor["descricao"]}}</option>{% endfor %}</select></th><th><input type="text" class="form-control"></th><th style="text-align:center; vertical-align:middle;"><input type="checkbox" class="form-check-input align-self-center"></th><th><select class="form-select"><option value="">Selecione...</option>{% for valor in situacao_saude %}<option value="{{valor["id"]}}">{{valor["descricao"]}}</option>{% endfor %}</select></th></th></tr>');
+        $("#familia tbody").append('<tr><th><input class="form-control" type="text"></th><th><input class="form-control" type="text"></th><th class="align-self-center"><select class="form-select"><option value="">Selecione...</option>{% for valor in estadocivil %}<option value="{{valor[0]}}">{{valor[1]}}</option>{% endfor %}</select></th><th><input type="text" class="form-control"></th><th><input type="date" class="form-control" class="form-control" placeholder="09/03/1880" value="" style="width:170px"></th><th><select class="form-select"><option value="">Selecione...</option>{% for valor in escolaridade %}<option value="{{valor[0]}}">{{valor[1]}}</option>{% endfor %}</select></th><th><input type="text" class="form-control"></th><th style="text-align:center; vertical-align:middle;"><input type="checkbox" class="form-check-input align-self-center"></th><th><select class="form-select"><option value="">Selecione...</option>{% for valor in situacao_saude %}<option value="{{valor[0]}}">{{valor[1]}}</option>{% endfor %}</select></th></th></tr>');
       });
     </script>
   </body>

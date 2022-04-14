@@ -22,14 +22,12 @@ mysql = MySQL(app)
 banco = Conexao(cred)
 
 def popularCombo(tabela):
-    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-    cursor.execute('select * from ' + tabela)
-    valores = cursor.fetchall()
+    valores = banco.consultar('select * from ' + tabela)
 
-    if valores:
+    if len(valores) > 0:
         return valores
     else:
-        return [dict({'id': 0, 'descricao': 'Banco está vazio', 'tipo': 'Banco está vazio'})]
+        return [(1, 'Banco está vazio')]
 
 def retornarStringSQL(valor):
     if valor == '':
@@ -57,8 +55,9 @@ def login():
         username = request.form['username']
         password = request.form['password']
         # Check if account exists using SQLite
-        sql = 'select * from "CadastroPrefeitura".accounts WHERE email like ' + "'" +  username + "' AND senha like MD5('" + password + "')"
+        sql = 'select * from accounts WHERE email like ' + "'" +  username + "' AND senha like MD5('" + password + "')"
         account = banco.consultar(sql)
+        print(sql)
         # If account exists in accounts table in out database
         if account:
             print(account)
@@ -230,7 +229,7 @@ def registro():
             senha = request.form['senha']
             
             try:
-                if banco.manipular("INSERT INTO \"CadastroPrefeitura\".accounts(nome, senha, email) VALUES('{}', MD5('{}'), '{}')".format(nome, senha, email)):
+                if banco.manipular("INSERT INTO accounts(nome, senha, email) VALUES('{}', MD5('{}'), '{}')".format(nome, senha, email)):
                     msg = 'Registro efetuado com suesso!'
                 else:
                     msg = 'Erro fatal ao tentar registrar um usuário.'    
