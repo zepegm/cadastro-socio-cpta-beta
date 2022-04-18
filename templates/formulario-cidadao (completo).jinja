@@ -231,11 +231,9 @@
               <label for="raca" class="form-label">Ra&ccedil;a/cor <span class="text-muted">(Opcional)</span></label>
               <select class="form-select" id="raca" name="raca">
                 <option value="">Selecione...</option>
-                <option value="B">Branco</option>
-                <option value="P">Preto</option>
-                <option value="PD">Pardo</option>
-                <option value="A">Amarelo</option>
-                <option value="I">&Iacute;ndio</option>
+                {% for valor in raca %}
+                  <option value="{{valor[0]}}">{{valor[1]}}</option>
+                {% endfor %}
               </select>
             </div>
 

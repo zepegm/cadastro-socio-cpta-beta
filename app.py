@@ -138,6 +138,7 @@ def cadastro_cidadao():
     imovel = popularCombo('tipo_imovel')
     transporte = popularCombo('transporte')
     situacao_saude = popularCombo('situacao_saude')
+    raca_cor = popularCombo('raca_cor')
 
     msg = ''
 
@@ -216,7 +217,7 @@ def cadastro_cidadao():
         msg = 'Gravado com sucesso!'
 
     if 'loggedin' in session:
-        return render_template('formulario-cidadao (completo).jinja', msg=msg, escolaridade=escolaridade, estadocivil=estadocivil, religiao=religiao, beneficios=beneficios, servicos_saude=servicos_saude, cultura_lazer=cultura_lazer, imovel=imovel, transporte=transporte, situacao_saude=situacao_saude)
+        return render_template('formulario-cidadao (completo).jinja', msg=msg, escolaridade=escolaridade, estadocivil=estadocivil, religiao=religiao, beneficios=beneficios, servicos_saude=servicos_saude, cultura_lazer=cultura_lazer, imovel=imovel, transporte=transporte, situacao_saude=situacao_saude, raca = raca_cor)
     else:
         return render_template('index.html', msg='')
 
