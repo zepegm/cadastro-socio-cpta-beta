@@ -11,6 +11,7 @@ class Conexao(object):
             cur.execute(sql)
             cur.close()
             self._db.commit()
+            print(sql)
         except:
             print(sql)
             return False

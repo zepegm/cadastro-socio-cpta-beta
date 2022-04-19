@@ -144,8 +144,10 @@ def cadastro_cidadao():
 
     # agora é hora de receber os dados
     if request.method=='POST' and 'nome' in request.form:
+        print(request.form)
         chefe_familia = request.form['chefe_familia']
         nome = "'" + request.form['nome'] + "'"
+        endereco = "'" + request.form['endereco'] + "'"
         rg = "'" + request.form['rg'] + "'"
         cpf = "'" + request.form['cpf'] + "'"
         nis = retornarIntSQL(request.form['nis'])
@@ -153,6 +155,7 @@ def cadastro_cidadao():
         data_nascimento = "'" + request.form['data_nascimento'] + "'"
         telefone = retornarStringSQL(request.form['telefone'])
         celular = retornarStringSQL(request.form['celular'])
+        email = retornarStringSQL(request.form['email'])
         cidade = "'" + request.form['cidade_natal'] + "'"
         estado = "'" + request.form['uf_natal'] + "'"
         profissao = retornarStringSQL(request.form['profissao'])
@@ -164,30 +167,33 @@ def cadastro_cidadao():
         estadocivil_sql = retornarIntSQL(request.form['estado_civil'])
         escolaridade_sql = retornarIntSQL(request.form['escolaridade'])
         religiao_sql = retornarIntSQL(request.form['religiao'])
-        entrevistador = session['id']
+        #entrevistador = session['id']
 
-        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        #cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
 
-        codigoSQL = 'INSERT INTO cidadao VALUES(null, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, null, null, null, %s, NOW(), NOW(), %s, %s, %s, null, %s)' % \
-            (chefe_familia, nome, rg, cpf, nis, sus, data_nascimento, telefone, celular, cidade, estado, profissao, renda_familiar, num_filhos, participacao_social, desc_part_social, raca, \
-            estadocivil_sql, escolaridade_sql, religiao_sql, entrevistador)
+        codigoSQL = 'INSERT INTO cidadao(nome, nascimento, telefone, celular, email, endereco, rg, cpf, nis, sus, chefe_familia, cidade, estado, escolaridade, raca, profissao, renda, num_filhos, estado_civil, religiao, atividades_soc, desc_atividades_soc) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)' % \
+            (nome, data_nascimento, telefone, celular, email, endereco, rg, cpf, nis, sus, chefe_familia, cidade, estado, escolaridade_sql, raca, profissao, renda_familiar, num_filhos, estadocivil_sql, religiao_sql, participacao_social, desc_part_social)
 
-        cursor.execute(codigoSQL)
+        banco.manipular(codigoSQL)
+        #cursor.execute(codigoSQL)
 
         # executar novos cadastros
         ultimo_id = mysql.connection.insert_id()
         
         beneficios_list = request.form.getlist('beneficios')
         for val in beneficios_list:
-            cursor.execute('insert into cidadaoxbeneficios values(%s, %s)', (ultimo_id, val))
+            #cursor.execute('insert into cidadaoxbeneficios values(%s, %s)', (ultimo_id, val))
+            print(val)
 
         servicos_saude_list = request.form.getlist('servicos_saude')
         for val in servicos_saude_list:
-            cursor.execute('insert into cidadaoxservico_saude values(%s, %s)', (ultimo_id, val))
+            #cursor.execute('insert into cidadaoxservico_saude values(%s, %s)', (ultimo_id, val))
+            print(val)
 
         cultura_lazer_list = request.form.getlist('cultura_lazer')
         for val in cultura_lazer_list:
-            cursor.execute('insert into cidadaoxcultura_lazer values(%s, %s)', (ultimo_id, val))
+            #cursor.execute('insert into cidadaoxcultura_lazer values(%s, %s)', (ultimo_id, val))
+            print(val)
 
 
         # imovel
@@ -207,11 +213,11 @@ def cadastro_cidadao():
 
         codigoSQL = 'INSERT INTO situacao_habitacional VALUES(%s, %s, %s, null, null, null, null, %s, %s, %s, null)' % (ultimo_id, imovel_id, endereco, correio, entrega_comercio, area) 
         print(codigoSQL)
-        cursor.execute(codigoSQL)
+        #cursor.execute(codigoSQL)
 
         print(endereco)
 
-        mysql.connection.commit()
+        #mysql.connection.commit()
 
         #print(ultimo_id)
         msg = 'Gravado com sucesso!'
