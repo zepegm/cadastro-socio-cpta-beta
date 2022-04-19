@@ -11,11 +11,25 @@ class Conexao(object):
             cur.execute(sql)
             cur.close()
             self._db.commit()
-            print(sql)
+            #print(sql)
         except:
             print(sql)
             return False
         return True
+
+    def inserir(self, sql):
+        try:
+            cur=self._db.cursor()
+            cur.execute(sql)
+            id = cur.fetchone()
+            cur.close()
+            self._db.commit()
+            #print(sql)
+        except:
+            print(sql)
+            return 0
+        return id
+
 
     def consultar(self, sql):
         rs=None

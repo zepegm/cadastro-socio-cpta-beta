@@ -144,12 +144,12 @@ def cadastro_cidadao():
 
     # agora é hora de receber os dados
     if request.method=='POST' and 'nome' in request.form:
-        print(request.form)
+        #print(request.form)
         chefe_familia = request.form['chefe_familia']
         nome = "'" + request.form['nome'] + "'"
         endereco = "'" + request.form['endereco'] + "'"
         rg = "'" + request.form['rg'] + "'"
-        cpf = "'" + request.form['cpf'] + "'"
+        cpf = request.form['cpf'].replace('.', '').replace('-', '')
         nis = retornarIntSQL(request.form['nis'])
         sus = retornarIntSQL(request.form['sus'])
         data_nascimento = "'" + request.form['data_nascimento'] + "'"
@@ -163,63 +163,48 @@ def cadastro_cidadao():
         num_filhos = retornarIntSQL(request.form['numero_filhos'])
         participacao_social = request.form['participacao_social']
         desc_part_social = retornarStringSQL(request.form['desc_participacao_social'])
-        raca = retornarStringSQL(request.form['raca'])
+        raca = retornarIntSQL(request.form['raca'])
         estadocivil_sql = retornarIntSQL(request.form['estado_civil'])
         escolaridade_sql = retornarIntSQL(request.form['escolaridade'])
         religiao_sql = retornarIntSQL(request.form['religiao'])
+        # situação habitacional
+        imovel_id = request.form['imovel']
+        area = "'" + request.form['area'] + "'"
+        if 'correio' in request.form:
+            correio = request.form['correio']
+        else:
+            correio = 'null'
+        if 'entregacomercio' in request.form:
+            entrega_comercio = request.form['entregacomercio']
+        else:
+            entrega_comercio = 'null'
+
         #entrevistador = session['id']
 
         #cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
 
-        codigoSQL = 'INSERT INTO cidadao(nome, nascimento, telefone, celular, email, endereco, rg, cpf, nis, sus, chefe_familia, cidade, estado, escolaridade, raca, profissao, renda, num_filhos, estado_civil, religiao, atividades_soc, desc_atividades_soc) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)' % \
-            (nome, data_nascimento, telefone, celular, email, endereco, rg, cpf, nis, sus, chefe_familia, cidade, estado, escolaridade_sql, raca, profissao, renda_familiar, num_filhos, estadocivil_sql, religiao_sql, participacao_social, desc_part_social)
+        codigoSQL = 'INSERT INTO cidadao(nome, nascimento, telefone, celular, email, endereco, rg, cpf, nis, sus, chefe_familia, cidade, estado, escolaridade, raca, profissao, renda, num_filhos, estado_civil, religiao, atividades_soc, desc_atividades_soc, tipo_imovel, area, correio, entrega) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING id' % \
+            (nome, data_nascimento, telefone, celular, email, endereco, rg, cpf, nis, sus, chefe_familia, cidade, estado, escolaridade_sql, raca, profissao, renda_familiar, num_filhos, estadocivil_sql, religiao_sql, participacao_social, desc_part_social, imovel_id, area, correio, entrega_comercio)
 
-        banco.manipular(codigoSQL)
+        #banco.manipular(codigoSQL)
         #cursor.execute(codigoSQL)
 
         # executar novos cadastros
-        ultimo_id = mysql.connection.insert_id()
-        
+        ultimo_id = banco.inserir(codigoSQL)[0]
+        print(ultimo_id)
+
         beneficios_list = request.form.getlist('beneficios')
         for val in beneficios_list:
-            #cursor.execute('insert into cidadaoxbeneficios values(%s, %s)', (ultimo_id, val))
-            print(val)
+            banco.manipular('insert into cidadao_x_beneficios values({}, {})'.format(ultimo_id, val))
 
         servicos_saude_list = request.form.getlist('servicos_saude')
         for val in servicos_saude_list:
-            #cursor.execute('insert into cidadaoxservico_saude values(%s, %s)', (ultimo_id, val))
-            print(val)
+            banco.manipular('insert into cidadao_x_saude values({}, {})'.format(ultimo_id, val))
 
         cultura_lazer_list = request.form.getlist('cultura_lazer')
         for val in cultura_lazer_list:
-            #cursor.execute('insert into cidadaoxcultura_lazer values(%s, %s)', (ultimo_id, val))
-            print(val)
+            banco.manipular('insert into cidadao_x_cultura values({}, {})'.format(ultimo_id, val))
 
-
-        # imovel
-        imovel_id = request.form['imovel']
-        endereco = "'" + request.form['endereco'] + "'"
-        area = "'" + request.form['area'] + "'"
-
-        if 'correio' in request.form:
-            correio = retornarIntSQL(request.form['correio'])
-        else:
-            correio = 'null'
-
-        if 'entregacomercio' in request.form:
-            entrega_comercio = retornarIntSQL(request.form['entregacomercio'])
-        else:
-            entrega_comercio = 'null'
-
-        codigoSQL = 'INSERT INTO situacao_habitacional VALUES(%s, %s, %s, null, null, null, null, %s, %s, %s, null)' % (ultimo_id, imovel_id, endereco, correio, entrega_comercio, area) 
-        print(codigoSQL)
-        #cursor.execute(codigoSQL)
-
-        print(endereco)
-
-        #mysql.connection.commit()
-
-        #print(ultimo_id)
         msg = 'Gravado com sucesso!'
 
     if 'loggedin' in session:
