@@ -83,6 +83,7 @@
     <h3>Cadastro socioecon&ocirc;mico</h3>
     <p class="lead">Preencha todos os dados obrigatórios.</p>
     <form action="{{ url_for('cadastro_cidadao') }}" class="needs-validation" novalidate method="post">
+      <input type="hidden" name="composicao_familiar", id="composicao_familiar">
           <div class="row g-3">
             <div class="col-sm-4">
               <label for="nome" class="form-label">Nome completo</label>
@@ -393,11 +394,11 @@
                     <tr>
                       <td>{{valor[1]}}</td>
                       <td>
-                        <input class="form-check-input me-1" type="checkbox" value="{{valor[0]}}">
+                        <input class="form-check-input me-1" type="checkbox" value="{{valor[0]}}" name="transporte_tem">
                         Tem?
                       </td>
                       <td>
-                        <input class="form-check-input me-1" type="checkbox" value="{{valor[0]}}">
+                        <input class="form-check-input me-1" type="checkbox" value="{{valor[0]}}" name="transporte_necessita">
                         Necessita?                        
                       </td>
                     </tr>
@@ -533,9 +534,26 @@
 
               var familiares = []
               $("#familia tbody tr").each(function() {
-                var membro = {'nome':$("th input", this).val(), 'cpf':$("th", this).next().find("input", this).val()};
-                console.log(membro)
+                var nome = $("th input", this).val();
+                var cpf = $("th", this).next().find("input", this).val();
+                var estado_civil = $("th", this).next().next().find("select", this).val();
+                var vinculo = $("th", this).next().next().next().find("input", this).val();
+                var nascimento = $("th", this).next().next().next().next().find("input", this).val();
+                var escolaridade = $("th", this).next().next().next().next().next().find("select", this).val();
+                var profissao = $("th", this).next().next().next().next().next().next().find("input", this).val();
+                if ($("th", this).next().next().next().next().next().next().next().find("input:checked", this).val() == "on") {
+                  var formal = true;
+                } else {
+                  var formal = false;
+                }
+                var saude = $("th", this).next().next().next().next().next().next().next().next().find("select", this).val();
+
+                var membro = {'nome':nome, 'cpf':cpf, 'estado_civil':estado_civil, 'vinculo':vinculo, 'nascimento':nascimento, 'escolaridade':escolaridade, 'profissao':profissao, 'formal':formal, 'saude':saude};
+                familiares.push(membro);
               });
+
+              //console.log(familiares);
+              $("#composicao_familiar").val(JSON.stringify(familiares));
 
               form.classList.add('was-validated');
             }, false);
@@ -595,7 +613,7 @@
 			}    
 
       $("#add").click(function() {
-        $("#familia tbody").append('<tr><th><input class="form-control" type="text"></th><th><input class="form-control" type="text"></th><th class="align-self-center"><select class="form-select"><option value="0">Selecione...</option>{% for valor in estadocivil %}<option value="{{valor[0]}}">{{valor[1]}}</option>{% endfor %}</select></th><th><input type="text" class="form-control"></th><th><input type="date" class="form-control" class="form-control" placeholder="09/03/1880" value="" style="width:170px"></th><th><select class="form-select"><option value="">Selecione...</option>{% for valor in escolaridade %}<option value="{{valor[0]}}">{{valor[1]}}</option>{% endfor %}</select></th><th><input type="text" class="form-control"></th><th style="text-align:center; vertical-align:middle;"><input type="checkbox" class="form-check-input align-self-center"></th><th><select class="form-select"><option value="0">Selecione...</option>{% for valor in situacao_saude %}<option value="{{valor[0]}}">{{valor[1]}}</option>{% endfor %}</select></th></th></tr>');
+        $("#familia tbody").append('<tr><th><input class="form-control" type="text"></th><th><input class="form-control" type="text"></th><th class="align-self-center"><select class="form-select"><option value="0">Selecione...</option>{% for valor in estadocivil %}<option value="{{valor[0]}}">{{valor[1]}}</option>{% endfor %}</select></th><th><input type="text" class="form-control"></th><th><input type="date" class="form-control" class="form-control" placeholder="09/03/1880" value="" style="width:170px"></th><th><select class="form-select"><option value="0">Selecione...</option>{% for valor in escolaridade %}<option value="{{valor[0]}}">{{valor[1]}}</option>{% endfor %}</select></th><th><input type="text" class="form-control"></th><th style="text-align:center; vertical-align:middle;"><input type="checkbox" class="form-check-input align-self-center"></th><th><select class="form-select"><option value="0">Selecione...</option>{% for valor in situacao_saude %}<option value="{{valor[0]}}">{{valor[1]}}</option>{% endfor %}</select></th></th></tr>');
       });
     </script>
   </body>

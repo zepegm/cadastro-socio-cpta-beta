@@ -2,6 +2,7 @@ from conexaoBD import Conexao
 from flask import Flask, render_template, request, redirect, url_for, session
 from flask_mysqldb import MySQL
 import MySQLdb.cursors
+import json
 
 app=Flask(__name__)
 
@@ -36,7 +37,7 @@ def retornarStringSQL(valor):
         return "'" + valor + "'"
 
 def retornarIntSQL(valor):
-    if valor == '':
+    if valor == '' or valor == '0':
         return 'null'
     else:
         return valor
@@ -186,24 +187,45 @@ def cadastro_cidadao():
         codigoSQL = 'INSERT INTO cidadao(nome, nascimento, telefone, celular, email, endereco, rg, cpf, nis, sus, chefe_familia, cidade, estado, escolaridade, raca, profissao, renda, num_filhos, estado_civil, religiao, atividades_soc, desc_atividades_soc, tipo_imovel, area, correio, entrega) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING id' % \
             (nome, data_nascimento, telefone, celular, email, endereco, rg, cpf, nis, sus, chefe_familia, cidade, estado, escolaridade_sql, raca, profissao, renda_familiar, num_filhos, estadocivil_sql, religiao_sql, participacao_social, desc_part_social, imovel_id, area, correio, entrega_comercio)
 
-        #banco.manipular(codigoSQL)
-        #cursor.execute(codigoSQL)
 
+        print(codigoSQL)
+        
         # executar novos cadastros
         ultimo_id = banco.inserir(codigoSQL)[0]
-        print(ultimo_id)
+        #print(ultimo_id)
 
+        # gravar benefícios
         beneficios_list = request.form.getlist('beneficios')
         for val in beneficios_list:
             banco.manipular('insert into cidadao_x_beneficios values({}, {})'.format(ultimo_id, val))
 
+        # gravar serviços de saúde
         servicos_saude_list = request.form.getlist('servicos_saude')
         for val in servicos_saude_list:
             banco.manipular('insert into cidadao_x_saude values({}, {})'.format(ultimo_id, val))
 
+        # gravar lista de cultura e lazer
         cultura_lazer_list = request.form.getlist('cultura_lazer')
         for val in cultura_lazer_list:
             banco.manipular('insert into cidadao_x_cultura values({}, {})'.format(ultimo_id, val))
+
+        # transporte
+        transporte_tem = request.form.getlist('transporte_tem')
+        for val in transporte_tem:
+            banco.manipular('insert into cidadao_x_transporte values({}, {}, {})'.format(ultimo_id, val, "'tem'"))
+            print('insert into cidadao_x_transporte values({}, {}, {})'.format(ultimo_id, val, 'tem'))
+
+        transporte_necessita = request.form.getlist('transporte_necessita')
+        for val in transporte_necessita:
+            banco.manipular('insert into cidadao_x_transporte values({}, {}, {})'.format(ultimo_id, val, "'necessita'"))
+
+
+        # gravar composição familiar        
+        composicao_familiar = json.loads(request.form['composicao_familiar'])
+        for membro in composicao_familiar:
+            sql = "insert into composicao_familiar values({}, {}, {}, {}, {}, {}, {}, {}, {})".format(ultimo_id, retornarIntSQL(membro['cpf']), retornarIntSQL(membro['estado_civil']), retornarStringSQL(membro['vinculo']), retornarStringSQL(membro['nascimento']), retornarIntSQL(membro['escolaridade']), retornarStringSQL(membro['profissao']), membro['formal'], retornarIntSQL(membro['saude']))
+            print(sql)
+            banco.manipular(sql)
 
         msg = 'Gravado com sucesso!'
 
