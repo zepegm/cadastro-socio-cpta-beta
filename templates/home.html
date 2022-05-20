@@ -130,15 +130,11 @@
                 <td>{{pessoa['nome']}}</td>
                 <td>{{pessoa['rg']}}</td>
                 <td>{{pessoa['cpf']}}</td>
-                <td>
-                  {% for data in ultimasDatas %}
-                    
-                    {% if pessoa['id']|string in data['id_cidadao']|string %}
-                      {{ data['ultimo_dia'] }}
-                    {% endif %}
-
-                  {% endfor %}
-                </td>
+                {% if pessoa['ultima_retirada'] != None %}
+                <td>{{pessoa['ultima_retirada']}}</td>
+                {% else %}
+                <td>-</td>
+                {% endif %}
               </tr>
             {% endfor %}
           </tbody>
@@ -157,16 +153,15 @@
       <div class="col-sm-6">
         <p><span class="fw-bold">Nis: </span>{{dadosPessoais['nis']}}</p>
         <p><span class="fw-bold">Sus: </span>{{dadosPessoais['sus']}}</p>
-        <p><span class="fw-bold">Data de nascimento: </span>{{dadosPessoais['data_nascimento']}}</p>
+        <p><span class="fw-bold">Data de nascimento: </span>{{dadosPessoais['nascimento']}}</p>
         <p><span class="fw-bold">Telefone: </span>{{dadosPessoais['telefone']}}</p>
         <p><span class="fw-bold">Celular: </span>{{dadosPessoais['celular']}}</p>
-        <p><span class="fw-bold">Cidade Natal: </span>{{dadosPessoais['cidade_natal']}}/{{dadosPessoais['uf_natal']}}</p>
+        <p><span class="fw-bold">Cidade Natal: </span>{{dadosPessoais['cidade']}}/{{dadosPessoais['estado']}}</p>
         <p><span class="fw-bold">Estado Civil: </span>{{dadosPessoais['estado_civil']}}</p>
         <p><span class="fw-bold">Profissão: </span>{{dadosPessoais['profissao']}}</p>
-        <p><span class="fw-bold">Renda Familiar (SM): </span>{{dadosPessoais['renda_familiar_sm']}}</p>
+        <p><span class="fw-bold">Renda Familiar (SM): </span>{{dadosPessoais['renda']}}</p>
         <p><span class="fw-bold">Escolaridade: </span>{{dadosPessoais['escolaridade']}}</p>
         <p><span class="fw-bold">Religião: </span>{{dadosPessoais['religiao']}}</p>
-        <p><span class="fw-bold">Observações: </span>{{dadosPessoais['observacoes']}}</p>
       </div>
     </div>    
     {% endif %}

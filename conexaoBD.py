@@ -1,4 +1,5 @@
 import psycopg2
+import psycopg2.extras
 
 class Conexao(object):
     _db=None
@@ -41,6 +42,17 @@ class Conexao(object):
         except:
             return None
         return rs
+
+    def consultarDict(self, sql):
+        rs=None
+        try:
+            cur=self._db.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+            cur.execute(sql)
+            rs=cur.fetchall()
+            cur.close()
+        except:
+            return None
+        return [dict(row) for row in rs]
 
     def proximaPK(self, tabela, chave):
         sql='select max('+chave+') from '+tabela

@@ -42,11 +42,11 @@ def retornarIntSQL(valor):
     else:
         return valor
 
-@app.route('/cadastro-cpta/', methods=['GET', 'POST'])
+@app.route('/', methods=['GET', 'POST'])
 def login():
     # se tiver logado já vai direto pra home
     if 'loggedin' in session:
-        return render_template('home.html')
+        return redirect(url_for('home'))
 
     # Output message if something goes wrong...
     msg = ''
@@ -91,38 +91,29 @@ def home():
     if 'loggedin' in session:
         nome = session['nome']
 
-        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-        cursor.execute('select id, nome, rg, cpf from cidadao order by nome')
+        if 'data_nova' in request.form and int(request.form['selecao_update']) > 0:
+            id_selecao = request.form['selecao_update']
+            nova_data = request.form['data_nova']
+            codigoSQL = "INSERT INTO retirada_cesta VALUES('%s', %s)" % (nova_data, id_selecao)
+            banco.manipular(codigoSQL)
+            msg='Cadastro efetuado com sucesso!'
+
+        #cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        #cursor.execute('select id, nome, rg, cpf from cidadao order by nome')
         #cursor.execute('select * from retirada_cesta')
-        listaPessoas = cursor.fetchall()
-        ultimasDatas = []
+        listaPessoas = banco.consultarDict("select id, nome, rg, cpf, to_char(max(data_retirada), 'DD/MM/YYYY') as ultima_retirada from cidadao LEFT JOIN retirada_cesta ON cidadao.id = retirada_cesta.id_cidadao group by cidadao.id order by nome")
         dadosPessoais = []
         id_selecao = 0
         msg = ''
 
         if 'selecao' in request.form:
-            codigoSQL = "select cidadao.nis, cidadao.sus, cidadao.data_nascimento, cidadao.telefone, cidadao.celular, cidadao.cidade_natal, cidadao.uf_natal, cidadao.profissao, cidadao.renda_familiar_sm, cidadao.numero_filhos, cidadao.participacao_social, cidadao.desc_participacao_social, cidadao.raca, cidadao.observacoes, estado_civil.descricao as 'estado_civil', escolaridade.descricao as 'escolaridade', religiao.religiao from cidadao LEFT JOIN religiao on religiao.id = cidadao.id_religiao LEFT JOIN estado_civil on cidadao.id_estado_civil = estado_civil.id LEFT JOIN escolaridade on cidadao.id_escolaridade = escolaridade.id where cidadao.id = %s" % (request.form['selecao'])
-            print(codigoSQL)
-            cursor.execute(codigoSQL)
-            dadosPessoais = cursor.fetchone()
+            codigoSQL = "select cidadao.nis, cidadao.sus, cidadao.nascimento, cidadao.telefone, cidadao.celular, cidadao.cidade, cidadao.estado, cidadao.profissao, cidadao.renda, cidadao.num_filhos, cidadao.atividades_soc, cidadao.desc_atividades_soc, cidadao.raca, estado_civil.descricao as estado_civil, escolaridade.descricao as escolaridade, religiao.descricao as religiao from cidadao LEFT JOIN religiao on religiao.id = cidadao.religiao LEFT JOIN estado_civil on cidadao.estado_civil = estado_civil.id LEFT JOIN escolaridade on cidadao.escolaridade = escolaridade.id where cidadao.id = %s" % (request.form['selecao'])
+            #print(codigoSQL)
+            #cursor.execute(codigoSQL)
+            dadosPessoais = banco.consultarDict(codigoSQL)[0]
             id_selecao = request.form['selecao']
 
-        if 'data_nova' in request.form and int(request.form['selecao_update']) > 0:
-            id_selecao = request.form['selecao_update']
-            nova_data = request.form['data_nova']
-            codigoSQL = "INSERT INTO retirada_cesta VALUES(%s, '%s')" % (id_selecao, nova_data)
-            print(codigoSQL)
-            cursor.execute(codigoSQL)
-            mysql.connection.commit()
-            msg='Cadastro efetuado com sucesso!'
-
-        for pessoa in listaPessoas:
-            codigoSQL = "select id_cidadao, DATE_FORMAT(max(data_retirada), '%d/%m/%Y') as ultimo_dia from retirada_cesta where id_cidadao = " + str(pessoa['id'])
-            cursor.execute(codigoSQL)
-            ultima_data = cursor.fetchone()
-            ultimasDatas.append(ultima_data)
-
-        return render_template('home.html', msg=msg, ultimasDatas=ultimasDatas, id_selecao=id_selecao, dadosPessoais=dadosPessoais, nome=nome, listaPessoas=listaPessoas)
+        return render_template('home.html', msg=msg, id_selecao=id_selecao, dadosPessoais=dadosPessoais, nome=nome, listaPessoas=listaPessoas)
     else:
         return render_template('index.html', msg='')
 
