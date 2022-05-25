@@ -214,7 +214,7 @@ def cadastro_cidadao():
         # gravar composição familiar        
         composicao_familiar = json.loads(request.form['composicao_familiar'])
         for membro in composicao_familiar:
-            sql = "insert into composicao_familiar values({}, {}, {}, {}, {}, {}, {}, {}, {})".format(ultimo_id, retornarIntSQL(membro['cpf']), retornarIntSQL(membro['estado_civil']), retornarStringSQL(membro['vinculo']), retornarStringSQL(membro['nascimento']), retornarIntSQL(membro['escolaridade']), retornarStringSQL(membro['profissao']), membro['formal'], retornarIntSQL(membro['saude']))
+            sql = "insert into composicao_familiar values({}, {}, {}, {}, {}, {}, {}, {}, {}, {})".format(ultimo_id, retornarIntSQL(membro['cpf']), retornarIntSQL(membro['estado_civil']), retornarStringSQL(membro['vinculo']), retornarStringSQL(membro['nascimento']), retornarIntSQL(membro['escolaridade']), retornarStringSQL(membro['profissao']), membro['formal'], retornarIntSQL(membro['saude']), retornarStringSQL(membro['nome']))
             print(sql)
             banco.manipular(sql)
 
