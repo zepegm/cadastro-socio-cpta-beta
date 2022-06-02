@@ -108,7 +108,7 @@ def home():
         msg = ''
 
         if 'selecao' in request.form:
-            codigoSQL = "select cidadao.nis, cidadao.sus, cidadao.nascimento, cidadao.telefone, cidadao.celular, cidadao.cidade, cidadao.estado, cidadao.profissao, cidadao.renda, cidadao.num_filhos, cidadao.atividades_soc, cidadao.desc_atividades_soc, cidadao.raca, estado_civil.descricao as estado_civil, escolaridade.descricao as escolaridade, religiao.descricao as religiao from cidadao LEFT JOIN religiao on religiao.id = cidadao.religiao LEFT JOIN estado_civil on cidadao.estado_civil = estado_civil.id LEFT JOIN escolaridade on cidadao.escolaridade = escolaridade.id where cidadao.id = %s" % (request.form['selecao'])
+            codigoSQL = "select cidadao.nis, cidadao.sus, cidadao.nascimento, cidadao.telefone, cidadao.celular, cidadao.email, cidadao.cidade, cidadao.estado, cidadao.profissao, cidadao.renda, cidadao.num_filhos, cidadao.atividades_soc, cidadao.desc_atividades_soc, cidadao.raca, estado_civil.descricao as estado_civil, escolaridade.descricao as escolaridade, religiao.descricao as religiao from cidadao LEFT JOIN religiao on religiao.id = cidadao.religiao LEFT JOIN estado_civil on cidadao.estado_civil = estado_civil.id LEFT JOIN escolaridade on cidadao.escolaridade = escolaridade.id where cidadao.id = %s" % (request.form['selecao'])
             #print(codigoSQL)
             #cursor.execute(codigoSQL)
             dadosPessoais = banco.consultarDict(codigoSQL)[0]
@@ -146,7 +146,7 @@ def cadastro_cidadao():
         #endereco = "'" + request.form['endereco'] + "'"
         
         rg = "'" + request.form['rg'] + "'"
-        cpf = request.form['cpf'].replace('.', '').replace('-', '')
+        cpf = request.form['cpf'].replace('.', '').replace('-', '').zfill(11)
         nis = retornarIntSQL(request.form['nis'])
         sus = retornarIntSQL(request.form['sus'])
         data_nascimento = "'" + request.form['data_nascimento'] + "'"
