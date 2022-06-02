@@ -102,19 +102,27 @@ def home():
         #cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
         #cursor.execute('select id, nome, rg, cpf from cidadao order by nome')
         #cursor.execute('select * from retirada_cesta')
-        listaPessoas = banco.consultarDict("select id, nome, rg, cpf, to_char(max(data_retirada), 'DD/MM/YYYY') as ultima_retirada from cidadao LEFT JOIN retirada_cesta ON cidadao.id = retirada_cesta.id_cidadao group by cidadao.id order by nome")
+        listaPessoas = banco.consultarDict("select id, nome, rg, substr(lpad(cpf::text, 11, '0'), 1, 3) || '.' || substr(lpad(cpf::text, 11, '0'), 4, 3) || '.' || substr(lpad(cpf::text, 11, '0'), 7, 3) || '-' || substr(lpad(cpf::text, 11, '0'), 10) as cpf, to_char(max(data_retirada), 'DD/MM/YYYY') as ultima_retirada from cidadao LEFT JOIN retirada_cesta ON cidadao.id = retirada_cesta.id_cidadao group by cidadao.id order by nome") 
         dadosPessoais = []
+        beneficios = []
         id_selecao = 0
         msg = ''
 
         if 'selecao' in request.form:
-            codigoSQL = "select cidadao.nis, cidadao.sus, cidadao.nascimento, cidadao.telefone, cidadao.celular, cidadao.email, cidadao.cidade, cidadao.estado, cidadao.profissao, cidadao.renda, cidadao.num_filhos, cidadao.atividades_soc, cidadao.desc_atividades_soc, cidadao.raca, estado_civil.descricao as estado_civil, escolaridade.descricao as escolaridade, religiao.descricao as religiao from cidadao LEFT JOIN religiao on religiao.id = cidadao.religiao LEFT JOIN estado_civil on cidadao.estado_civil = estado_civil.id LEFT JOIN escolaridade on cidadao.escolaridade = escolaridade.id where cidadao.id = %s" % (request.form['selecao'])
+            codigoSQL = "select cidadao.chefe_familia, cidadao.endereco, cidadao.nis, cidadao.sus, to_char(cidadao.nascimento, 'DD/MM/YYYY') as nascimento, cidadao.telefone, cidadao.celular, cidadao.email, cidadao.cidade, cidadao.estado, cidadao.profissao, cidadao.renda, cidadao.num_filhos, cidadao.atividades_soc, cidadao.desc_atividades_soc, raca_cor.descricao as raca, estado_civil.descricao as estado_civil, escolaridade.descricao as escolaridade, religiao.descricao as religiao from cidadao LEFT JOIN religiao on religiao.id = cidadao.religiao LEFT JOIN estado_civil on cidadao.estado_civil = estado_civil.id LEFT JOIN escolaridade on cidadao.escolaridade = escolaridade.id LEFT JOIN raca_cor on cidadao.raca = raca_cor.id where cidadao.id =  %s" % (request.form['selecao'])
             #print(codigoSQL)
             #cursor.execute(codigoSQL)
             dadosPessoais = banco.consultarDict(codigoSQL)[0]
+
+            for k, v in dadosPessoais.items():
+                if dadosPessoais[k] is None:
+                    dadosPessoais[k] = '-'
+
+            beneficios = banco.consultarDict('select beneficio.descricao from cidadao_x_beneficios LEFT JOIN beneficio on cidadao_x_beneficios.id_beneficio = beneficio.id where cidadao_x_beneficios.id_cidadao = ' + request.form['selecao'])
+
             id_selecao = request.form['selecao']
 
-        return render_template('home.html', msg=msg, id_selecao=id_selecao, dadosPessoais=dadosPessoais, nome=nome, listaPessoas=listaPessoas)
+        return render_template('home.html', msg=msg, id_selecao=id_selecao, dadosPessoais=dadosPessoais, nome=nome, listaPessoas=listaPessoas, beneficios=beneficios)
     else:
         return render_template('index.html', msg='')
 

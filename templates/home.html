@@ -166,19 +166,65 @@
         <span class="fw-bold">E-mail: </span>{{dadosPessoais['email']}}
       </div>
       <div class="col-sm-6">
-        <p><span class="fw-bold">Nis: </span>{{dadosPessoais['nis']}}</p>
-        <p><span class="fw-bold">Sus: </span>{{dadosPessoais['sus']}}</p>
-        <p><span class="fw-bold">Data de nascimento: </span>{{dadosPessoais['nascimento']}}</p>
-        
-        
-        <p><span class="fw-bold">Cidade Natal: </span>{{dadosPessoais['cidade']}}/{{dadosPessoais['estado']}}</p>
-        <p><span class="fw-bold">Estado Civil: </span>{{dadosPessoais['estado_civil']}}</p>
-        <p><span class="fw-bold">Profissão: </span>{{dadosPessoais['profissao']}}</p>
-        <p><span class="fw-bold">Renda Familiar (SM): </span>{{dadosPessoais['renda']}}</p>
-        <p><span class="fw-bold">Escolaridade: </span>{{dadosPessoais['escolaridade']}}</p>
-        <p><span class="fw-bold">Religião: </span>{{dadosPessoais['religiao']}}</p>
+        <span class="fw-bold">Endereço: </span>{{dadosPessoais['endereco']}}
+      </div>    
+      <div class="col-sm-6">
+        <span class="fw-bold">Nascimento: </span>{{dadosPessoais['nascimento']}} - {{dadosPessoais['cidade']}}/{{dadosPessoais['estado']}}
       </div>
+      <div class="col-sm-2">
+        <span class="fw-bold">Raça: </span>{{dadosPessoais['raca']}}
+      </div>        
+      <div class="col-sm-2">
+        <span class="fw-bold">Religião: </span>{{dadosPessoais['religiao']}}
+      </div>
+      <div class="col-sm-2">
+        <span class="fw-bold">Nº Filhos: </span>{{dadosPessoais['num_filhos']}}
+      </div>     
+      <div class="col-sm-2">
+        <span class="fw-bold">Estado Civil: </span>{{dadosPessoais['estado_civil']}}
+      </div>               
+      <div class="col-sm-4">
+        <span class="fw-bold">Escolaridade: </span>{{dadosPessoais['escolaridade']}}
+      </div>     
+      <div class="col-sm-2">
+        {% if dadosPessoais['chefe_familia'] == True %}
+        <span class="fw-bold">Chefe de família: </span>Sim
+        {% else %}
+        <span class="fw-bold">Chefe de família: </span>Não
+        {% endif %}
+      </div>
+      <div class="col-sm-4">
+        <span class="fw-bold">Profissão: </span>{{dadosPessoais['profissao']}}
+      </div>      
+      <div class="col-sm-2">
+        <span class="fw-bold">Renda Familiar (SM): </span>{{dadosPessoais['renda']}}
+      </div>
+      <div class="col-sm-4">
+        {% if dadosPessoais['atividades_soc'] == True %}
+        <span class="fw-bold">Participa de Atividades Sociais: </span>Sim
+        {% else %}
+        <span class="fw-bold">Participa de Atividades Sociais: </span>Não
+        {% endif %}
+      </div>  
+      {% if dadosPessoais['desc_atividades_soc'] != '-' %}   
+      <div class="col-sm-12">
+        <span class="fw-bold">Descrição das Atividades Sociais: </span>{{dadosPessoais['desc_atividades_soc']}}
+      </div>
+      {% endif %}
     </div>    
+    <hr>
+    <div class="row g-3">
+      {% if beneficios|length > 0 %}
+        <div class="col-sm-4">
+          <h3>Benefícios:</h3>
+            <ul>
+            {% for valor in beneficios %}
+              <li>{{valor['descricao']}}</li>
+            {% endfor %}
+          </ul>
+        </div>
+      {% endif %}
+    </div>
     {% endif %}
   </div>
 
