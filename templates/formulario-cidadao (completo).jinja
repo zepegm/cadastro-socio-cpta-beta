@@ -69,10 +69,6 @@
           <a href="{{ url_for('logout') }}" class="nav-link">Sair</a>
         </li>
       </ul>
-      <form class="d-flex">
-        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-        <button class="btn btn-outline-success" type="submit">Search</button>
-      </form>
     </div>
   </div>
 </nav>
@@ -125,12 +121,16 @@
               </div>
             </div>
 
-            <div class="col-8">
-              <label for="endereco" class="form-label">Endere&ccedil;o</label>
-              <input type="text" class="form-control" id="endereco" name="endereco" placeholder="ex.: Avenida Coronel Domiciano, 1 - Centro" required>
+            <div class="col-2">
+              <label for="endereco" class="form-label">Buscar por CEP:</label>
+              <input type="text" class="form-control" id="cep" name="cep" placeholder="ex.: 12.630-000" onkeydown="javascript: fMasc( this, mCEP );" maxlength="10">
               <div class="invalid-feedback">
-                Preencha um endereço válido!
+                CEP incorreto!
               </div>
+            </div>
+
+            <div class="col-1">
+              <input type="button" class="btn btn-primary" id="pesquisarCEP" name="pesquisarCEP" value="Pesquisar">
             </div>
 
             <div class="col-sm-2">
