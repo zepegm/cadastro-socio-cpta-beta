@@ -140,7 +140,11 @@ def cadastro_cidadao():
         #print(request.form)
         chefe_familia = request.form['chefe_familia']
         nome = "'" + request.form['nome'] + "'"
-        endereco = "'" + request.form['endereco'] + "'"
+
+        # montar endereço
+        endereco = "'" + request.form['rua'] + ', ' + request.form['num_casa'] + ', ' + request.form['bairro'] + ', ' + request.form['cidade'] + ', ' + request.form['estado_casa'] + "'"
+        #endereco = "'" + request.form['endereco'] + "'"
+        
         rg = "'" + request.form['rg'] + "'"
         cpf = request.form['cpf'].replace('.', '').replace('-', '')
         nis = retornarIntSQL(request.form['nis'])
