@@ -1,6 +1,7 @@
 from conexaoBD import Conexao
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 from flask_mysqldb import MySQL
+from cep import retornarCEP
 import MySQLdb.cursors
 import json
 
@@ -245,6 +246,24 @@ def registro():
         return render_template('registro.html', msg='')
 
     return render_template('index.html', msg='')    
+
+
+@app.route('/buscarCEP', methods=['GET', 'POST'])
+def buscarCEP():
+
+    cep = '0'
+
+    if request.method == 'POST':
+        #print('got a post request!')
+
+        if request.is_json: # application/json
+            # handle your ajax request here!
+            cep = request.json
+
+    
+    endereco = retornarCEP(cep)
+
+    return jsonify(endereco)
 
 if __name__ == '__main__':
     app.run(debug=True, use_reloader=True)

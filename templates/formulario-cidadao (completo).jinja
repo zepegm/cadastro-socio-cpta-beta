@@ -101,7 +101,7 @@
               <label for="telefone" class="form-label">Telefone</label>
               <input type="tel" class="form-control" id="telefone" name="telefone" placeholder="(11) 1111-1111" value="" onkeydown="javascript: fMasc( this, mTel );" maxlength="13">  
               <div class="invalid-feedback">
-                Digite o telefone no formato correto!
+                Digite o telefone no formato correto!                                                                                                                                         
               </div>                          
             </div>
 
@@ -123,15 +123,55 @@
 
             <div class="col-2">
               <label for="endereco" class="form-label">Buscar por CEP:</label>
-              <input type="text" class="form-control" id="cep" name="cep" placeholder="ex.: 12.630-000" onkeydown="javascript: fMasc( this, mCEP );" maxlength="10">
+              <input type="text" class="form-control" id="cep" name="cep" value="12.630-000" onkeydown="javascript: fMasc( this, mCEP );" maxlength="10">
               <div class="invalid-feedback">
                 CEP incorreto!
               </div>
             </div>
 
-            <div class="col-1">
+            <div class="col-1 align-self-end">
               <input type="button" class="btn btn-primary" id="pesquisarCEP" name="pesquisarCEP" value="Pesquisar">
             </div>
+
+            <div class="col-sm-3">
+              <label for="rg" class="form-label">Logradouro</label>
+              <input type="text" class="form-control" id="rua" name="rua" placeholder="ex.: Av. Coronel Domiciano" required>
+              <div class="invalid-feedback">
+                O campo logradouro é obrigatório
+              </div>              
+            </div>
+
+            <div class="col-sm-1">
+              <label for="rg" class="form-label">Número</label>
+              <input type="text" class="form-control" id="num_casa" name="num_casa" placeholder="ex: 1 ou S/N" required>
+              <div class="invalid-feedback">
+                Obrigatório!
+              </div>              
+            </div>
+
+            <div class="col-sm-2">
+              <label for="rg" class="form-label">Bairro</label>
+              <input type="text" class="form-control" id="bairro" name="bairro" placeholder="ex.: Centro" required>
+              <div class="invalid-feedback">
+                O campo bairro é obrigatório
+              </div>              
+            </div>
+
+            <div class="col-sm-2">
+              <label for="rg" class="form-label">Cidade</label>
+              <input type="text" class="form-control" id="cidade" name="cidade" value="Cachoeira Paulista" required>
+              <div class="invalid-feedback">
+                O campo cidade é obrigatório
+              </div>              
+            </div>
+
+            <div class="col-sm-1">
+              <label for="rg" class="form-label">Estado</label>
+              <input type="text" class="form-control" id="estado_casa" name="estado_casa" value="SP" required>
+              <div class="invalid-feedback">
+                Obrigatório!
+              </div>              
+            </div>            
 
             <div class="col-sm-2">
               <label for="rg" class="form-label">RG</label>
@@ -611,6 +651,28 @@
 				num=num.replace(/\D/g,"")
 				return num
 			}    
+
+      $("#pesquisarCEP").click(function() {
+        var cep =   $("#cep").val();
+
+        $.ajax({
+          type: "POST",
+          url: "{{ url_for('buscarCEP') }}",
+          contentType: "application/json",
+          data: JSON.stringify(cep),
+          dataType: "json",
+          success: function(response) {
+            //console.log(response)
+            $("#rua").val(response['logradouro']);
+            $("#bairro").val(response['bairro']);
+            $("#cidade").val(response['cidade']);
+            $("#estado_casa").val(response['uf']);
+          },
+          error: function(err) {
+            console.log(err);
+          }
+        });
+      });
 
       $("#add").click(function() {
         $("#familia tbody").append('<tr><th><input class="form-control" type="text"></th><th><input class="form-control" type="text"></th><th class="align-self-center"><select class="form-select"><option value="0">Selecione...</option>{% for valor in estadocivil %}<option value="{{valor[0]}}">{{valor[1]}}</option>{% endfor %}</select></th><th><input type="text" class="form-control"></th><th><input type="date" class="form-control" class="form-control" placeholder="09/03/1880" value="" style="width:170px"></th><th><select class="form-select"><option value="0">Selecione...</option>{% for valor in escolaridade %}<option value="{{valor[0]}}">{{valor[1]}}</option>{% endfor %}</select></th><th><input type="text" class="form-control"></th><th style="text-align:center; vertical-align:middle;"><input type="checkbox" class="form-check-input align-self-center"></th><th><select class="form-select"><option value="0">Selecione...</option>{% for valor in situacao_saude %}<option value="{{valor[0]}}">{{valor[1]}}</option>{% endfor %}</select></th></th></tr>');
