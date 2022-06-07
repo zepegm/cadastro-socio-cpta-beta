@@ -96,7 +96,7 @@
         <h3>Lista de Cidadãos Cadastrados</h3>
       </div>
         <div class="col-sm-2">
-          <input type="date" class="form-control" id="data_nova" name="data_nova" placeholder="09/03/1880" value="" required>
+          <input type="date" class="form-control" id="data_nova" name="data_nova" placeholder="09/03/1880" value="{{hoje}}" required>
           <div class="invalid-feedback">
             A data é obrigatória!
           </div>              
@@ -211,11 +211,12 @@
         <span class="fw-bold">Descrição das Atividades Sociais: </span>{{dadosPessoais['desc_atividades_soc']}}
       </div>
       {% endif %}
-    </div>    
+    </div>  
+    {% if rel == True %}  
     <hr>
     <div class="row g-3">
       {% if beneficios|length > 0 %}
-        <div class="col-sm-4">
+        <div class="col-sm-3">
           <h3>Benefícios:</h3>
             <ul>
             {% for valor in beneficios %}
@@ -224,7 +225,54 @@
           </ul>
         </div>
       {% endif %}
+
+      {% if servicos_saude|length > 0 %}
+        <div class="col-sm-3">
+          <h3>Serviços de saúde:</h3>
+            <ul>
+            {% for valor in servicos_saude %}
+              <li>{{valor['descricao']}}</li>
+            {% endfor %}
+          </ul>
+        </div>
+      {% endif %}
+
+      {% if cultura|length > 0 %}
+        <div class="col-sm-3">
+          <h3>Cultura x Lazer:</h3>
+            <ul>
+            {% for valor in cultura %}
+              <li>{{valor['descricao']}}</li>
+            {% endfor %}
+          </ul>
+        </div>
+      {% endif %}
+
+      {% if transporte|length > 0 %}
+        <div class="col-sm-3">
+          <h3>Transporte:</h3>
+            <ul>
+            {% for valor in transporte %}
+              <li>{{valor['descricao']}} - <span class="fw-bold">T:</span> {{valor['tem']}}, <span class="fw-bold">N:</span> {{valor['necessita']}}</li>
+            {% endfor %}
+          </ul>
+        </div>
+      {% endif %}
+
     </div>
+    {% endif %}
+
+    {% if composicao_familiar|length > 0 %}
+    <hr>
+    <div class="row g-3">
+      <div class="col-sm-12">
+        <table>
+          
+        </table>
+      </div>
+    </div>
+    {% endif %}
+
     {% endif %}
   </div>
 

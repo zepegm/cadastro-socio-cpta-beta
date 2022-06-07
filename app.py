@@ -1,8 +1,9 @@
+from telnetlib import theNULL
 from conexaoBD import Conexao
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 from flask_mysqldb import MySQL
 from cep import retornarCEP
-import MySQLdb.cursors
+from datetime import date
 import json
 
 app=Flask(__name__)
@@ -105,6 +106,10 @@ def home():
         listaPessoas = banco.consultarDict("select id, nome, rg, substr(lpad(cpf::text, 11, '0'), 1, 3) || '.' || substr(lpad(cpf::text, 11, '0'), 4, 3) || '.' || substr(lpad(cpf::text, 11, '0'), 7, 3) || '-' || substr(lpad(cpf::text, 11, '0'), 10) as cpf, to_char(max(data_retirada), 'DD/MM/YYYY') as ultima_retirada from cidadao LEFT JOIN retirada_cesta ON cidadao.id = retirada_cesta.id_cidadao group by cidadao.id order by nome") 
         dadosPessoais = []
         beneficios = []
+        servicos_saude = []
+        cultura = []
+        transporte = []
+        composicao_familiar = []
         id_selecao = 0
         msg = ''
 
@@ -119,12 +124,21 @@ def home():
                     dadosPessoais[k] = '-'
 
             beneficios = banco.consultarDict('select beneficio.descricao from cidadao_x_beneficios LEFT JOIN beneficio on cidadao_x_beneficios.id_beneficio = beneficio.id where cidadao_x_beneficios.id_cidadao = ' + request.form['selecao'])
+            servicos_saude = banco.consultarDict('select servico_saude.descricao from cidadao_x_saude LEFT JOIN servico_saude on cidadao_x_saude.id_saude = servico_saude.id where cidadao_x_saude.id_cidadao = ' + request.form['selecao'])
+            cultura = banco.consultarDict('select cultura_lazer.descricao from cidadao_x_cultura LEFT JOIN cultura_lazer on cidadao_x_cultura.id_cultura = cultura_lazer.id where cidadao_x_cultura.id_cidadao = ' + request.form['selecao'])
+            transporte = banco.consultarDict("select transporte.descricao, case when tem = true then 'Sim' else 'Não' end as tem, case when necessita = true then 'Sim' else 'Não' end as necessita from cidadao_x_transporte LEFT JOIN transporte ON cidadao_x_transporte.id_transporte = transporte.id WHERE cidadao_x_transporte.id_cidadao = " + request.form['selecao'] + "  order by cidadao_x_transporte.id_transporte")
+            composicao_familiar = banco.consultarDict("select nome, substr(lpad(cpf::text, 11, '0'), 1, 3) || '.' || substr(lpad(cpf::text, 11, '0'), 4, 3) || '.' || substr(lpad(cpf::text, 11, '0'), 7, 3) || '-' || substr(lpad(cpf::text, 11, '0'), 10) as cpf, estado_civil.descricao, vinculo, to_char(nascimento, 'DD/MM/YYYY') as nascimento, escolaridade.descricao, profissao, case when formal = true then 'Sim' else 'Não' end as formal, situacao_saude.descricao from composicao_familiar LEFT JOIN estado_civil ON estado_civil.id = composicao_familiar.estado_civil LEFT JOIN escolaridade ON escolaridade.id = composicao_familiar.escolaridade LEFT JOIN situacao_saude ON situacao_saude.id = composicao_familiar.situacao_saude where id_cidadao = "  + request.form['selecao'])
 
             id_selecao = request.form['selecao']
 
-        return render_template('home.html', msg=msg, id_selecao=id_selecao, dadosPessoais=dadosPessoais, nome=nome, listaPessoas=listaPessoas, beneficios=beneficios)
+        if len(beneficios) > 0 or len(servicos_saude) > 0 or len(cultura) > 0 or len(transporte) > 0: 
+            rel = True
+        else:
+            rel = False
+
+        return render_template('home.html', msg=msg, id_selecao=id_selecao, dadosPessoais=dadosPessoais, nome=nome, listaPessoas=listaPessoas, beneficios=beneficios, servicos_saude=servicos_saude, cultura=cultura, transporte=transporte, rel=rel, composicao_familiar=composicao_familiar, hoje=date.today())
     else:
-        return render_template('index.html', msg='')
+        return render_template('index.html', msg='', rel=rel, hoje=date.today())
 
 
 @app.route('/cadastro-cpta/cadastro_cidadao', methods=['GET', 'POST'])
@@ -216,12 +230,12 @@ def cadastro_cidadao():
         # transporte
         transporte_tem = request.form.getlist('transporte_tem')
         for val in transporte_tem:
-            banco.manipular('insert into cidadao_x_transporte values({}, {}, {})'.format(ultimo_id, val, "'tem'"))
-            print('insert into cidadao_x_transporte values({}, {}, {})'.format(ultimo_id, val, 'tem'))
+            banco.manipular('insert into cidadao_x_transporte values({}, {}, {}, {})'.format(ultimo_id, val, 'true', 'false'))
+            print('insert into cidadao_x_transporte values({}, {}, {}, {})'.format(ultimo_id, val, 'true', 'false'))
 
         transporte_necessita = request.form.getlist('transporte_necessita')
         for val in transporte_necessita:
-            banco.manipular('insert into cidadao_x_transporte values({}, {}, {})'.format(ultimo_id, val, "'necessita'"))
+            banco.manipular('insert into cidadao_x_transporte values ({}, {}, false, true) on conflict (id_cidadao, id_transporte) Do update set necessita = true'.format(ultimo_id, val))
 
 
         # gravar composição familiar        
