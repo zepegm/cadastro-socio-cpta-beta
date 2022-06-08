@@ -1,3 +1,3 @@
-vazio = []
+from cep import retornarCEP
 
-print(len(vazio))
+print(retornarCEP("12605500"))
