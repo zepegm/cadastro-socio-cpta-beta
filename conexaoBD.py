@@ -34,13 +34,14 @@ class Conexao(object):
 
     def consultar(self, sql):
         rs=None
-        try:
-            cur=self._db.cursor()
-            cur.execute(sql)
-            rs=cur.fetchall()
-            cur.close()
-        except:
-            return None
+        while rs == None:
+            try:
+                cur=self._db.cursor()
+                cur.execute(sql)
+                rs=cur.fetchall()
+                cur.close()
+            except:
+                pass
         return rs
 
     def consultarDict(self, sql):
