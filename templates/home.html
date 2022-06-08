@@ -266,8 +266,35 @@
     <hr>
     <div class="row g-3">
       <div class="col-sm-12">
-        <table>
-          
+        <table class="table" id="familia">
+          <thead class="table-dark">
+            <tr style="vertical-align:middle">
+              <th>Nome</th>
+              <th>CPF</th>
+              <th>Estado Civil</th>
+              <th>Vínculo</th>
+              <th>Nascimento</th>
+              <th>Escolaridade</th>
+              <th>Profissão</th>
+              <th>Formal</th>
+              <th>Saúde</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for valor in composicao_familiar %}
+              <tr>
+              <td>{{valor['nome']}}</td>
+              <td>{{valor['cpf']}}</td>
+              <td>{{valor['estado_civil']}}</td>
+              <td>{{valor['vinculo']}}</td>
+              <td>{{valor['nascimento']}}</td>
+              <td>{{valor['escolaridade']}}</td>
+              <td>{{valor['profissao']}}</td>
+              <td>{{valor['formal']}}</td>
+              <td>{{valor['situacao_saude']}}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
         </table>
       </div>
     </div>
