@@ -103,7 +103,7 @@ def home():
         #cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
         #cursor.execute('select id, nome, rg, cpf from cidadao order by nome')
         #cursor.execute('select * from retirada_cesta')
-        listaPessoas = banco.consultarDict("select id, nome, rg, substr(lpad(cpf::text, 11, '0'), 1, 3) || '.' || substr(lpad(cpf::text, 11, '0'), 4, 3) || '.' || substr(lpad(cpf::text, 11, '0'), 7, 3) || '-' || substr(lpad(cpf::text, 11, '0'), 10) as cpf, to_char(max(data_retirada), 'DD/MM/YYYY') as ultima_retirada from cidadao LEFT JOIN retirada_cesta ON cidadao.id = retirada_cesta.id_cidadao group by cidadao.id order by nome") 
+        listaPessoas = banco.consultarDict("select id, nome, rg, substr(lpad(cpf::text, 11, '0'), 1, 3) || '.' || substr(lpad(cpf::text, 11, '0'), 4, 3) || '.' || substr(lpad(cpf::text, 11, '0'), 7, 3) || '-' || substr(lpad(cpf::text, 11, '0'), 10) as cpf, to_char(max(data_retirada), 'DD/MM/YYYY') as ultima_retirada from cidadao LEFT JOIN retirada_cesta ON cidadao.id = retirada_cesta.id_cidadao group by cidadao.id order by nome limit 20 offset 0")
         dadosPessoais = []
         beneficios = []
         servicos_saude = []
