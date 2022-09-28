@@ -35,6 +35,34 @@
         user-select: none;
       }
 
+      .popup{
+        background-color: #ffffff;
+        width: 80%;
+        padding: 30px 40px;
+        position: absolute;
+        transform: translate(-50%,-50%);
+        left: 50%;
+        top: 50%;
+        border-radius: 8px;
+        display: none;
+        font-family: "Poppins",sans-serif;
+        text-align: left;
+        border-style: solid;
+      }
+
+      .popup button{
+        display: block;
+        width: 150px;
+        position: relative;
+        margin: 10px auto;
+        text-align: center;
+        background-color: #0f72e5;
+        border-radius: 20px;
+        color: #ffffff;
+        text-decoration: none;
+        padding: 8px 0;
+      }      
+
       @media (min-width: 768px) {
         .bd-placeholder-img-lg {
           font-size: 3.5rem;
@@ -83,16 +111,49 @@
     <p class="lead">Aperta o botão abaixo para cadastrar um novo cidadão, clique na linha da tabela para visualizar informações a respeito do cidadão selecionado.</p>
     <a class="btn btn-lg btn-primary" href="{{ url_for('cadastro_cidadao') }}" role="button">Cadastrar nova(o) cidad&atilde;(o) &raquo;</a>
     
+    <!-- Aqui vai ficar o popup -->
+    <div class="popup">
+      <!-- <button id="close">&times;</button> -->
+      <h2>Detalhes:</h2>
+      <div class="row">
+        <div class="col-sm-3"><span class="fw-bold">Nome: </span><span id="dt_nome">-</span></div>
+        <div class="col-sm-3"><span class="fw-bold">RG: </span><span id="dt_rg">-</span></div>
+        <div class="col-sm-3"><span class="fw-bold">CPF: </span><span id="dt_cpf">-</span></div>
+        <div class="col-sm-3"><span class="fw-bold">Nasc.: </span><span id="dt_nasc">-</span></div>
+
+        <div class="col-sm-6"><span class="fw-bold">Endereço: </span><span id="dt_end">-</span></div>
+        <div class="col-sm-3"><span class="fw-bold">NIS: </span><span id="dt_nis">-</span></div>
+        <div class="col-sm-3"><span class="fw-bold">SUS: </span><span id="dt_sus">-</span></div>
+
+        <div class="col-sm-3"><span class="fw-bold">Telefone: </span><span id="dt_tel">-</span></div>
+        <div class="col-sm-3"><span class="fw-bold">Celular: </span><span id="dt_cel">-</span></div>
+        <div class="col-sm-3"><span class="fw-bold">E-mail: </span><span id="dt_email">-</span></div>
+        <div class="col-sm-3"><span class="fw-bold">Nº Filhos: </span><span id="dt_filhos">-</span></div>
+
+        <div class="col-sm-3"><span class="fw-bold">Religião: </span><span id="dt_relg">-</span></div>
+        <div class="col-sm-3"><span class="fw-bold">Estado Civil: </span><span id="dt_estado_civil">-</span></div>
+        <div class="col-sm-3"><span class="fw-bold">Escolaridade: </span><span id="dt_escol">-</span></div>
+        <div class="col-sm-3"><span class="fw-bold">Raça: </span><span id="dt_raca">-</span></div>
+
+        <div class="col-sm-3"><span class="fw-bold">Chefe família: </span><span id="dt_chefefamilia">-</span></div>
+        <div class="col-sm-3"><span class="fw-bold">Profissão: </span><span id="dt_profissao">-</span></div>
+        <div class="col-sm-3"><span class="fw-bold">Renda familiar (SM): </span><span id="dt_renda">-</span></div>
+
+      </div>
+      <button id="close">Fechar</button>
+    </div>
+
     <!-- Ai, ai... hora de construir tabela !-->
     {% if not not listaPessoas %}
     <form method="post" action="{{ url_for('home') }}" id="consultar">
       <input type="hidden" value="" id="selecao" name="selecao">
     </form>
-    <hr class="my-4">
+
     <form method="post" action="{{ url_for('home') }}" id="atualizar">
       <input type="hidden" value="{{id_selecao}}" id="selecao_update" name="selecao_update">
     <div class="row g-3">
       <div class="col-sm-4">
+        <br>
         <h3>Lista de Cidadãos Cadastrados</h3>
       </div>
         <div class="col-sm-2">
@@ -112,7 +173,6 @@
         <table class="table table-hover" id="tabela-cidadaos">
           <thead class="table-dark">
             <tr>
-              <th>ID</th>
               <th>Nome</th>
               <th>RG</th>
               <th>CPF</th>
@@ -121,13 +181,12 @@
           </thead>
           <tbody>
             {% for pessoa in listaPessoas %}
-            {% if id_selecao|string in pessoa['id']|string %}
+            {% if id_selecao|string == pessoa['id']|string %}
               <tr class='table-warning'>
             {% else %}
               <tr>
             {% endif %}
-                <td>{{pessoa['id']}}</td>
-                <td>{{pessoa['nome']}}</td>
+                <td data-id="{{pessoa['id']}}">{{pessoa['nome']}} - <a href="javascript:exibirDetalhes({{pessoa['id']}})">Ver Detalhes</a></td>
                 <td>{{pessoa['rg']}}</td>
                 <td>{{pessoa['cpf']}}</td>
                 {% if pessoa['ultima_retirada'] != None %}
@@ -136,6 +195,7 @@
                 <td>-</td>
                 {% endif %}
               </tr>
+
             {% endfor %}
           </tbody>
         </table>
@@ -314,10 +374,50 @@
     <script type="text/javascript">
       $('#tabela-cidadaos tbody tr').click(function() {
           $(this).addClass('table-warning').siblings().removeClass('table-warning');
-          $("#selecao").val($(this).find("td:first").html())
-          //$("#selecao_update").val($(this).find("td:first").html())
-          $('#consultar').submit()
+          $("#selecao").val($(this).find("td:first").attr('data-id'));
+          //console.log($("#selecao").val())
+          $("#selecao_update").val($(this).find("td:first").attr('data-id'));
+          //$('#consultar').submit()
       });
+
+      $('#close').click(function() {
+        $(".popup").css('display', 'none');
+      });
+
+      function exibirDetalhes(id) {
+        $.ajax({
+          type: "POST",
+          url: "{{ url_for('exibirDetalhes') }}",
+          contentType: "application/json",
+          data: JSON.stringify(id),
+          dataType: "json",
+          success: function(response) {
+            $('#dt_nome').html(response['dadosPessoais']['nome']);
+            $('#dt_rg').html(response['dadosPessoais']['rg']);
+            $('#dt_cpf').html(response['dadosPessoais']['cpf']);
+            $('#dt_nasc').html(response['dadosPessoais']['nascimento'] + ' - ' + response['dadosPessoais']['cidade'] + '/' + response['dadosPessoais']['estado']);
+            $('#dt_end').html(response['dadosPessoais']['endereco']);
+            $('#dt_tel').html(response['dadosPessoais']['telefone']);
+            $('#dt_cel').html(response['dadosPessoais']['celular']);
+            $('#dt_email').html(response['dadosPessoais']['email']);
+            $('#dt_filhos').html(response['dadosPessoais']['num_filhos']);
+            $('#dt_nis').html(response['dadosPessoais']['nis']);
+            $('#dt_sus').html(response['dadosPessoais']['sus']);
+            $('#dt_raca').html(response['dadosPessoais']['raca']);
+            $('#dt_relg').html(response['dadosPessoais']['religiao']);
+            $('#dt_estado_civil').html(response['dadosPessoais']['estado_civil']);
+            $('#dt_escol').html(response['dadosPessoais']['escolaridade']);
+            $('#dt_chefefamilia').html(String(response['dadosPessoais']['chefe_familia']).replace('true', 'Sim').replace('false', 'Não'));
+            $('#dt_profissao').html(response['dadosPessoais']['profissao']);
+            $('#dt_renda').html(response['dadosPessoais']['renda']);
+            $(".popup").css('display', 'block');
+            console.log(response);
+          },
+          error: function(err) {
+              console.log(err);
+          }
+      });
+      }
       </script>
       
   </body>
