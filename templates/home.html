@@ -114,7 +114,7 @@
     <!-- Aqui vai ficar o popup -->
     <div class="popup">
       <!-- <button id="close">&times;</button> -->
-      <h2>Detalhes:</h2>
+      <h2>Dados Pessoais:</h2>
       <div class="row">
         <div class="col-sm-3"><span class="fw-bold">Nome: </span><span id="dt_nome">-</span></div>
         <div class="col-sm-3"><span class="fw-bold">RG: </span><span id="dt_rg">-</span></div>
@@ -140,6 +140,10 @@
         <div class="col-sm-3"><span class="fw-bold">Renda familiar (SM): </span><span id="dt_renda">-</span></div>
 
       </div>
+      <br>
+      <div class="row" id="listasDetalhes"></div>
+      <br>
+      <div class="row" id="composicaoFamiliar"></div>
       <button id="close">Fechar</button>
     </div>
 
@@ -207,7 +211,7 @@
     {% if not not dadosPessoais %}
     <hr class="my-4">
     <div class="row g-3">
-      <h3>Detalhes:</h3>
+      <h3>Dados Pessoais:</h3>
     </div> 
     <div class="row g-3">
       <div class="col-sm-2">
@@ -410,8 +414,84 @@
             $('#dt_chefefamilia').html(String(response['dadosPessoais']['chefe_familia']).replace('true', 'Sim').replace('false', 'Não'));
             $('#dt_profissao').html(response['dadosPessoais']['profissao']);
             $('#dt_renda').html(response['dadosPessoais']['renda']);
-            $(".popup").css('display', 'block');
-            console.log(response);
+            $('#listasDetalhes').empty();
+            
+            if (response['beneficios'].length > 0) {
+              $('#listasDetalhes').append('<div class="col-sm-3" id="listaDetalhesBeneficios"></div>');
+              $('#listaDetalhesBeneficios').append('<h3>Benefícios:</h3>');
+              $('#listaDetalhesBeneficios').append('<ul></ul>');
+              for (var i = 0; i < response['beneficios'].length; i++) {
+                $('#listaDetalhesBeneficios ul').append('<li>' + response['beneficios'][i]['descricao'] + '</li>');
+              }
+            }
+
+            if (response['cultura'].length > 0) {
+              $('#listasDetalhes').append('<div class="col-sm-3" id="listaDetalhesCultura"></div>');
+              $('#listaDetalhesCultura').append('<h3>Cultura:</h3>');
+              $('#listaDetalhesCultura').append('<ul></ul>');
+              for (var i = 0; i < response['cultura'].length; i++) {
+                $('#listaDetalhesCultura ul').append('<li>' + response['cultura'][i]['descricao'] + '</li>');
+              }
+            }  
+            
+            if (response['servicos_saude'].length > 0) {
+              $('#listasDetalhes').append('<div class="col-sm-3" id="listaDetalhesSaude"></div>');
+              $('#listaDetalhesSaude').append('<h3>Serviços Saúde:</h3>');
+              $('#listaDetalhesSaude').append('<ul></ul>');
+              for (var i = 0; i < response['servicos_saude'].length; i++) {
+                $('#listaDetalhesSaude ul').append('<li>' + response['servicos_saude'][i]['descricao'] + '</li>');
+              }
+            }   
+            
+            if (response['transporte'].length > 0) {
+              $('#listasDetalhes').append('<div class="col-sm-3" id="listaDetalhesTransporte"></div>');
+              $('#listaDetalhesTransporte').append('<h3>Transporte:</h3>');
+              $('#listaDetalhesTransporte').append('<ul></ul>');
+              for (var i = 0; i < response['transporte'].length; i++) {
+                $('#listaDetalhesTransporte ul').append('<li>' + response['transporte'][i]['descricao'] + '</li>');
+              }
+            }            
+            
+            $('#composicaoFamiliar').empty();
+            if (response['composicao_familiar'].length > 0) {
+              $('#composicaoFamiliar').append('<div class="col-sm-12"></div>');
+              $('#composicaoFamiliar div.col-sm-12').append('<h3>Composição Familiar:</h3>')
+              $('#composicaoFamiliar div.col-sm-12').append('<table class="table">\
+                                                             <thead class="table-dark">\
+                                                             <tr style="vertical-align:middle">\
+                                                             <th>Nome</th><th>CPF</th>\
+                                                             <th>Estado Civil</th>\
+                                                             <th>Vínculo</th>\
+                                                             <th>Nascimento</th>\
+                                                             <th>Escolaridade</th>\
+                                                             <th>Profissão</th>\
+                                                             <th>Formal</th>\
+                                                             <th>Saúde</th></tr>\
+                                                             </thead><tbody></tbody></table>');
+
+              for (var i = 0; i < response['composicao_familiar'].length; i++) {
+                $('#composicaoFamiliar div.col-sm-12 table tbody').append('<tr>\
+                                                                            <td>' + response['composicao_familiar'][i]['nome'] + '</td>\
+                                                                            <td>' + response['composicao_familiar'][i]['cpf'] + '</td>\
+                                                                            <td>' + response['composicao_familiar'][i]['estado_civil'] + '</td>\
+                                                                            <td>' + response['composicao_familiar'][i]['vinculo'] + '</td>\
+                                                                            <td>' + response['composicao_familiar'][i]['nascimento'] + '</td>\
+                                                                            <td>' + response['composicao_familiar'][i]['escolaridade'] + '</td>\
+                                                                            <td>' + response['composicao_familiar'][i]['profissao'] + '</td>\
+                                                                            <td>' + response['composicao_familiar'][i]['formal'] + '</td>\
+                                                                            <td>' + response['composicao_familiar'][i]['situacao_saude'] + '</td>\
+                                                                           </tr>')
+                console.log(response['composicao_familiar'][i]);
+              }
+
+            }
+
+            $('html,body').animate({
+              scrollTop: $(".popup").offset().top - $(window).height()/2
+            }, 100);
+
+            $(".popup").css('display', 'block');            
+            //console.log(response);
           },
           error: function(err) {
               console.log(err);
