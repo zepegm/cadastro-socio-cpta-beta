@@ -95,17 +95,22 @@ def home():
 
         id_selecao = 0
         msg = ''
+        page = 1
 
         if 'data_nova' in request.form and int(request.form['selecao_update']) > 0:
             id_selecao = request.form['selecao_update']
             nova_data = request.form['data_nova']
+            page = int(request.form['page_select'])
             codigoSQL = "INSERT INTO retirada_cesta VALUES('%s', %s)" % (nova_data, id_selecao)
             banco.manipular(codigoSQL)
             msg='Cadastro efetuado com sucesso!'
 
-        listaPessoas = banco.consultarDict("select id, nome, rg, substr(lpad(cpf::text, 11, '0'), 1, 3) || '.' || substr(lpad(cpf::text, 11, '0'), 4, 3) || '.' || substr(lpad(cpf::text, 11, '0'), 7, 3) || '-' || substr(lpad(cpf::text, 11, '0'), 10) as cpf, to_char(max(data_retirada), 'DD/MM/YYYY') as ultima_retirada from cidadao LEFT JOIN retirada_cesta ON cidadao.id = retirada_cesta.id_cidadao group by cidadao.id order by nome limit 20 offset 0")
+        sql = "select id, nome, rg, substr(lpad(cpf::text, 11, '0'), 1, 3) || '.' || substr(lpad(cpf::text, 11, '0'), 4, 3) || '.' || substr(lpad(cpf::text, 11, '0'), 7, 3) || '-' || substr(lpad(cpf::text, 11, '0'), 10) as cpf, to_char(max(data_retirada), 'DD/MM/YYYY') as ultima_retirada from cidadao LEFT JOIN retirada_cesta ON cidadao.id = retirada_cesta.id_cidadao group by cidadao.id order by nome limit 20 offset {}".format((page - 1) * 20)
+        listaPessoas = banco.consultarDict(sql)
+        total = banco.consultar('select count(*) from cidadao')
+        print(total[0][0])
 
-        return render_template('home.html', msg=msg, id_selecao=id_selecao, nome=nome, listaPessoas=listaPessoas, hoje=date.today())
+        return render_template('home.jinja', msg=msg, total=total[0][0], id_selecao=id_selecao, nome=nome, listaPessoas=listaPessoas, hoje=date.today(), page=page)
     else:
         return render_template('index.html', msg='')
 
@@ -136,6 +141,15 @@ def exibirDetalhes():
 
             return jsonify(pessoa)
 
+@app.route('/carregarNovaPagina', methods=['GET', 'POST'])
+def carregarNovaPagina():
+    if request.method == 'POST':
+        if request.is_json:
+            page = int(request.json)
+            sql = "select id, nome, rg, substr(lpad(cpf::text, 11, '0'), 1, 3) || '.' || substr(lpad(cpf::text, 11, '0'), 4, 3) || '.' || substr(lpad(cpf::text, 11, '0'), 7, 3) || '-' || substr(lpad(cpf::text, 11, '0'), 10) as cpf, to_char(max(data_retirada), 'DD/MM/YYYY') as ultima_retirada from cidadao LEFT JOIN retirada_cesta ON cidadao.id = retirada_cesta.id_cidadao group by cidadao.id order by nome limit 20 offset {}".format((page - 1) * 20)
+            listaPessoas = banco.consultarDict(sql)
+
+            return jsonify(listaPessoas)
 
 @app.route('/cadastro-cpta/cadastro_cidadao', methods=['GET', 'POST'])
 def cadastro_cidadao():
