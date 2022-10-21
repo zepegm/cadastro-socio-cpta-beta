@@ -200,7 +200,7 @@
                 <td>{{pessoa['rg']}}</td>
                 <td>{{pessoa['cpf']}}</td>
                 {% if pessoa['ultima_retirada'] != None %}
-                <td>{{pessoa['ultima_retirada']}}</td>
+                <td>{{pessoa['ultima_retirada']}} - <a href="javascript:exibirHistorico({{pessoa['id']}})">Ver Histórico</a></td>
                 {% else %}
                 <td>-</td>
                 {% endif %}
@@ -279,6 +279,22 @@
         $(".popup").css('display', 'none');
         $("#pagination").css('display', 'block');
       });
+
+      function exibirHistorico(id) {
+          $.ajax({
+            type: "POST",
+            url: "{{ url_for('exibirHistorico') }}",
+            contentType: "application/json",
+            data: JSON.stringify(id),
+            dataType: "json",
+            success: function(response) {
+              console.log(response['data']);
+            },
+            error: function(err) {
+                console.log(err);
+            }            
+          });
+      }
 
       function exibirDetalhes(id) {
         $.ajax({

@@ -114,6 +114,14 @@ def home():
     else:
         return render_template('index.html', msg='')
 
+@app.route('/exibirHistorico', methods=['GET', 'POST'])
+def exibirHistorico():
+    if request.method == 'POST':
+        if request.is_json:
+            id = request.json
+            codigoSQL = "select to_char(data_retirada, 'DD/MM/YYYY') as date from retirada_cesta where id_cidadao = {} order by data_retirada".format(id)
+            historico = banco.consultarDict(codigoSQL)
+            return {'data':historico}
 
 @app.route('/exibirDetalhes', methods=['GET', 'POST'])
 def exibirDetalhes():
