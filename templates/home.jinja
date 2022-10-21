@@ -113,7 +113,7 @@
     <a class="btn btn-lg btn-primary" href="{{ url_for('cadastro_cidadao') }}" role="button">Cadastrar nova(o) cidad&atilde;(o) &raquo;</a>
     
     <!-- Aqui vai ficar o popup -->
-    <div class="popup">
+    <div class="popup" id="p_detalhes">
       <!-- <button id="close">&times;</button> -->
       <h2>Dados Pessoais:</h2>
       <div class="row">
@@ -148,6 +148,20 @@
       <button id="close">Fechar</button>
     </div>
 
+<div class="popup" id="p_historico" style="width: 30%">
+  <h2>Histórico de Retiradas</h2>
+  <div class="row">
+    <table class="table table-hover" id="tb_historico">
+      <thead>
+        <tr>
+          <th>Data:</th>
+        </tr>        
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+  <button id="close_historico">Fechar</button>
+</div>
 
     <!-- Ai, ai... hora de construir tabela !-->
     {% if not not listaPessoas %}
@@ -200,7 +214,7 @@
                 <td>{{pessoa['rg']}}</td>
                 <td>{{pessoa['cpf']}}</td>
                 {% if pessoa['ultima_retirada'] != None %}
-                <td>{{pessoa['ultima_retirada']}} - <a href="javascript:exibirHistorico({{pessoa['id']}})">Ver Histórico</a></td>
+                <td>{{pessoa['ultima_retirada']}} - <a href="javascript:exibirHistorico({{pessoa['id']}}, '{{pessoa['nome']}}')">Ver Histórico</a></td>
                 {% else %}
                 <td>-</td>
                 {% endif %}
@@ -249,7 +263,7 @@
               var ultima_retirada = '-';
 
               if (response[i]['ultima_retirada'] != null) {
-                ultima_retirada = response[i]['ultima_retirada']
+                ultima_retirada = response[i]['ultima_retirada'] + ' - <a href="javascript:exibirHistorico(' + response[i]['id'] + ', ' + "'" + response[i]['nome'] + "'" + ')">Ver Histórico</a>'
               } 
 
               $('#tabela-cidadaos tbody').append('<tr>\
@@ -276,11 +290,16 @@
       });
 
       $('#close').click(function() {
-        $(".popup").css('display', 'none');
+        $("#p_detalhes").css('display', 'none');
         $("#pagination").css('display', 'block');
       });
 
-      function exibirHistorico(id) {
+      $('#close_historico').click(function() {
+        $("#p_historico").css('display', 'none');
+        $("#pagination").css('display', 'block');
+      });      
+
+      function exibirHistorico(id, nome) {
           $.ajax({
             type: "POST",
             url: "{{ url_for('exibirHistorico') }}",
@@ -288,7 +307,20 @@
             data: JSON.stringify(id),
             dataType: "json",
             success: function(response) {
-              console.log(response['data']);
+              $('#p_historico tbody').empty();
+              $('#p_historico thead tr th').html(nome);
+              for (var i = 0; i < response['data'].length; i++) {
+                $('#p_historico tbody').append('<tr><td>' + response['data'][i]['date'] + '</td></tr>');
+                //console.log(response['data'][i])
+                $('html,body').animate({
+                  scrollTop: $("#p_historico").offset().top - $(window).height()/2
+                }, 100);
+
+                $("#pagination").css('display', 'none');
+                $("#p_historico").css('display', 'block');                  
+              }
+              
+              //console.log(response['data']);
             },
             error: function(err) {
                 console.log(err);
@@ -395,11 +427,11 @@
             }
 
             $('html,body').animate({
-              scrollTop: $(".popup").offset().top - $(window).height()/2
+              scrollTop: $("#p_detalhes").offset().top - $(window).height()/2
             }, 100);
 
             $("#pagination").css('display', 'none');
-            $(".popup").css('display', 'block');    
+            $("#p_detalhes").css('display', 'block');    
             //console.log(response);
           },
           error: function(err) {
