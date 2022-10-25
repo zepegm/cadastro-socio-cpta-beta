@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
+    <meta name="generator" content="Hugo 0.88.1">
+    <title>Estatísticas</title>
+
+    <link rel="canonical" href="https://getbootstrap.com/docs/5.1/examples/navbar-fixed/">
+
+    
+
+    <!-- Bootstrap core CSS -->
+<link href="https://getbootstrap.com/docs/5.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+
+    <!-- Favicons -->
+<link rel="apple-touch-icon" href="{{ url_for('static', filename='images/brasao-cachoeira-paulista.png') }}" sizes="180x180">
+<link rel="icon" href="{{ url_for('static', filename='images/brasao-cachoeira-paulista.png') }}" sizes="32x32" type="image/png">
+<link rel="icon" href="{{ url_for('static', filename='images/brasao-cachoeira-paulista.png') }}" sizes="16x16" type="image/png">
+<link rel="manifest" href="https://getbootstrap.com/docs/5.1/assets/img/favicons/manifest.json">
+<link rel="mask-icon" href="https://getbootstrap.com/docs/5.1/assets/img/favicons/safari-pinned-tab.svg" color="#7952b3">
+<link rel="icon" href="{{ url_for('static', filename='images/brasao-cachoeira-paulista.png') }}">
+<meta name="theme-color" content="#7952b3">
+
+
+    
+    <!-- Custom styles for this template -->
+    <link href="https://getbootstrap.com/docs/5.1/examples/navbar-fixed/navbar-top-fixed.css" rel="stylesheet">
+  </head>
+
+  <body>
+    
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#">Cadastro socioecon&ocirc;mico</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+        <ul class="navbar-nav me-auto mb-2 mb-md-0">
+            <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="#">Início</a>
+            </li>
+            <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('cadastro_cidadao') }}">Cadastro</a>
+            </li>
+            <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('registro') }}">Registro</a>
+            </li>
+            <li class="nav-item">
+            <a href="{{ url_for('logout') }}" class="nav-link">Sair</a>
+            </li>
+        </ul>
+        <!-- <form class="d-flex">
+            <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+            <button class="btn btn-outline-success" type="submit">Search</button>
+        </form> !-->
+        </div>
+    </div>
+    </nav>
+
+    <main class="container">
+        <div class="bg-light p-5 rounded">
+            <canvas id="myChart" width="30%" height="30%"></canvas>     
+        </div>
+    </main>
+
+</body>
+<script src="{{ url_for('static', filename='js/chart.min.js') }}"></script>
+<script>
+const ctx = document.getElementById('myChart').getContext('2d');
+const myChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+        datasets: [{
+            label: '# of Votes',
+            data: [12, 19, 3, 5, 2, 3],
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.2)',
+                'rgba(54, 162, 235, 0.2)',
+                'rgba(255, 206, 86, 0.2)',
+                'rgba(75, 192, 192, 0.2)',
+                'rgba(153, 102, 255, 0.2)',
+                'rgba(255, 159, 64, 0.2)'
+            ],
+            borderColor: [
+                'rgba(255, 99, 132, 1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(75, 192, 192, 1)',
+                'rgba(153, 102, 255, 1)',
+                'rgba(255, 159, 64, 1)'
+            ],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
+</script>
+  </html>

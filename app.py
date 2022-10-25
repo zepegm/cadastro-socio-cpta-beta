@@ -87,6 +87,13 @@ def logout():
    # Redirect to login page
    return redirect(url_for('login'))
 
+@app.route('/cadastro-cpta/estatisticas', methods=['GET', 'POST'])
+def estatisticas():
+    if 'loggedin' in session:
+        return render_template('estatisticas.jinja')
+    else:
+        return render_template('index.html', msg='')
+
 
 @app.route('/cadastro-cpta/home', methods=['GET', 'POST'])
 def home():
