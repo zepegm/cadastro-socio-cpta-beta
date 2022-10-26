@@ -14,6 +14,12 @@
 
     <!-- Bootstrap core CSS -->
 <link href="https://getbootstrap.com/docs/5.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+<style>
+    .vertical-center {
+        vertical-align: middle;
+        text-align: right;
+    }
+</style>
 
     <!-- Favicons -->
 <link rel="apple-touch-icon" href="{{ url_for('static', filename='images/brasao-cachoeira-paulista.png') }}" sizes="180x180">
@@ -41,13 +47,16 @@
         <div class="collapse navbar-collapse" id="navbarCollapse">
         <ul class="navbar-nav me-auto mb-2 mb-md-0">
             <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="#">Início</a>
+            <a class="nav-link" href="{{ url_for('home') }}">Início</a>
             </li>
             <li class="nav-item">
             <a class="nav-link" href="{{ url_for('cadastro_cidadao') }}">Cadastro</a>
             </li>
             <li class="nav-item">
             <a class="nav-link" href="{{ url_for('registro') }}">Registro</a>
+            </li>
+            <li class="nav-item">
+            <a class="nav-link active" href="#">Estatísticas</a>
             </li>
             <li class="nav-item">
             <a href="{{ url_for('logout') }}" class="nav-link">Sair</a>
@@ -63,21 +72,47 @@
 
     <main class="container">
         <div class="bg-light p-5 rounded">
-            <canvas id="myChart" width="30%" height="30%"></canvas>     
+        <div class="row">
+            <div class="col-sm-4">
+                <label for="cb_ano" class="form-label">Quantidade de cestas retiradas em:</label>
+                <select class="form-select" id="cb_ano" name="cb_ano" onchange="alterarAno()">
+                    {% for lista in anos %}
+                        <option>{{lista['ano']}}</option>
+                    {% endfor %}
+                </select>
+            </div>
         </div>
+            <div class="row">
+                <div class="col-sm-12">
+                    <canvas id="myChart" width="100%" height="400"></canvas>     
+                </div>
+            </div>            
+        </div>
+        
     </main>
 
 </body>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="{{ url_for('static', filename='js/chart.min.js') }}"></script>
 <script>
+
+dados = {{dados}};
+labels_grap = []
+data_grap = []
+
+for (var i = 0; i < dados.length; i++) {
+    labels_grap.push(dados[i]['month']);
+    data_grap.push(dados[i]['count']);
+}
+
 const ctx = document.getElementById('myChart').getContext('2d');
 const myChart = new Chart(ctx, {
     type: 'bar',
     data: {
-        labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+        labels: labels_grap,
         datasets: [{
-            label: '# of Votes',
-            data: [12, 19, 3, 5, 2, 3],
+            label: 'nº de retiradas',
+            data: data_grap,
             backgroundColor: [
                 'rgba(255, 99, 132, 0.2)',
                 'rgba(54, 162, 235, 0.2)',
@@ -98,6 +133,8 @@ const myChart = new Chart(ctx, {
         }]
     },
     options: {
+        responsive: true, 
+        maintainAspectRatio: false,
         scales: {
             y: {
                 beginAtZero: true
@@ -105,5 +142,39 @@ const myChart = new Chart(ctx, {
         }
     }
 });
+
+function alterarAno() {
+    var ano = $('#cb_ano').val();
+    
+    $.ajax({
+        type: "POST",
+        url: "{{ url_for('estatisticas') }}",
+        contentType: "application/json",
+        data: JSON.stringify(ano),
+        dataType: "json",
+        success: function(response) {
+        // recebido a lista com sucesso, é necessário limpar a tabela e reinserir toda a lista
+            console.log(myChart.data.labels);
+            console.log(myChart.data.datasets[0].data);
+            
+            labels_grap = []
+            data_grap = []
+
+            for (var i = 0; i < response['dados'].length; i++) {
+                labels_grap.push(response['dados'][i]['month']);
+                data_grap.push(response['dados'][i]['count']);
+            }            
+
+            myChart.data.labels = labels_grap;
+            myChart.data.datasets[0].data = data_grap;
+            myChart.update();
+
+        },
+        error: function(err) {
+            console.log(err);
+        }
+    });
+}
+
 </script>
   </html>

@@ -90,7 +90,31 @@ def logout():
 @app.route('/cadastro-cpta/estatisticas', methods=['GET', 'POST'])
 def estatisticas():
     if 'loggedin' in session:
-        return render_template('estatisticas.jinja')
+
+        
+        if request.method == 'POST':
+            #print('got a post request!')
+
+            if request.is_json: # application/json
+                # handle your ajax request here!
+                ano = int(request.json)
+                codigosql = "SELECT to_char(date_trunc('month', data_retirada), 'MM/YYYY') AS month, \
+COUNT(id_cidadao) AS count FROM retirada_cesta \
+WHERE data_retirada < '{}-01-01' and data_retirada > '{}-12-31' \
+GROUP BY DATE_TRUNC('month',data_retirada) ORDER BY DATE_TRUNC('month',data_retirada)".format(ano + 1, ano - 1)
+                dados = banco.consultarDict(codigosql)
+                return {'dados':dados}
+
+
+        anos = banco.consultarDict('select DISTINCT ON(extract(year from data_retirada)) extract(year from data_retirada) as ano from retirada_cesta order by ano desc')
+        codigosql = "SELECT to_char(date_trunc('month', data_retirada), 'MM/YYYY') AS month, \
+COUNT(id_cidadao) AS count FROM retirada_cesta \
+WHERE data_retirada < '{}-01-01' and data_retirada > '{}-12-31' \
+GROUP BY DATE_TRUNC('month',data_retirada) ORDER BY DATE_TRUNC('month',data_retirada)".format(anos[0]['ano'] + 1, anos[0]['ano'] - 1)
+        
+        dados = banco.consultarDict(codigosql)
+
+        return render_template('estatisticas.jinja', anos=anos, dados=dados)
     else:
         return render_template('index.html', msg='')
 
