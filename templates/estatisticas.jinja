@@ -19,6 +19,11 @@
         vertical-align: middle;
         text-align: right;
     }
+
+    .title {
+        text-align: center;
+        font-weight: bold;
+    }
 </style>
 
     <!-- Favicons -->
@@ -70,11 +75,11 @@
     </div>
     </nav>
 
-    <main class="container">
+    <main class="container-fluid">
         <div class="bg-light p-5 rounded">
         <div class="row">
             <div class="col-sm-4">
-                <label for="cb_ano" class="form-label">Quantidade de cestas retiradas em:</label>
+                <label for="cb_ano" class="form-label">Ano de Pesquisa:</label>
                 <select class="form-select" id="cb_ano" name="cb_ano" onchange="alterarAno()">
                     {% for lista in anos %}
                         <option>{{lista['ano']}}</option>
@@ -82,11 +87,17 @@
                 </select>
             </div>
         </div>
-            <div class="row">
-                <div class="col-sm-12">
-                    <canvas id="myChart" width="100%" height="400"></canvas>     
-                </div>
-            </div>            
+        <br>
+        <div class="row">
+            <div class="col-sm-4">
+                <p class="title">Cadastro por Benefício</p>
+                <canvas id="myChart_beneficios" width="300" height="300"></canvas>     
+            </div>
+            <div class="col-sm-4">
+                <p class="title">Retiradas por mês:</p>
+                <canvas id="myChart_cestas_retiradas_ano" width="300" height="300"></canvas>     
+            </div>
+        </div>            
         </div>
         
     </main>
@@ -105,8 +116,8 @@ for (var i = 0; i < dados.length; i++) {
     data_grap.push(dados[i]['count']);
 }
 
-const ctx = document.getElementById('myChart').getContext('2d');
-const myChart = new Chart(ctx, {
+const ctx_cestas = document.getElementById('myChart_cestas_retiradas_ano').getContext('2d');
+const myChartCestas = new Chart(ctx_cestas, {
     type: 'bar',
     data: {
         labels: labels_grap,
@@ -114,27 +125,30 @@ const myChart = new Chart(ctx, {
             label: 'nº de retiradas',
             data: data_grap,
             backgroundColor: [
-                'rgba(255, 99, 132, 0.2)',
-                'rgba(54, 162, 235, 0.2)',
-                'rgba(255, 206, 86, 0.2)',
-                'rgba(75, 192, 192, 0.2)',
-                'rgba(153, 102, 255, 0.2)',
-                'rgba(255, 159, 64, 0.2)'
+                //'rgba(255, 99, 132, 0.2)',
+                'rgba(54, 162, 235, 0.2)'//,
+                //'rgba(255, 206, 86, 0.2)',
+                //'rgba(75, 192, 192, 0.2)',
+                //'rgba(153, 102, 255, 0.2)',
+                //'rgba(255, 159, 64, 0.2)'
             ],
             borderColor: [
-                'rgba(255, 99, 132, 1)',
-                'rgba(54, 162, 235, 1)',
-                'rgba(255, 206, 86, 1)',
-                'rgba(75, 192, 192, 1)',
-                'rgba(153, 102, 255, 1)',
-                'rgba(255, 159, 64, 1)'
+                //'rgba(255, 99, 132, 1)',
+                'rgba(54, 162, 235, 1)'//,
+                //'rgba(255, 206, 86, 1)',
+                //'rgba(75, 192, 192, 1)',
+                //'rgba(153, 102, 255, 1)',
+                //'rgba(255, 159, 64, 1)'
             ],
             borderWidth: 1
         }]
     },
     options: {
-        responsive: true, 
-        maintainAspectRatio: false,
+        //responsive: true, 
+        //maintainAspectRatio: false,
+        plugins: {
+            legend: false,
+        },
         scales: {
             y: {
                 beginAtZero: true
@@ -142,6 +156,36 @@ const myChart = new Chart(ctx, {
         }
     }
 });
+
+beneficios = {{beneficios}};
+labels_grap = []
+data_grap = []
+
+for (var i = 0; i < beneficios.length; i++) {
+    labels_grap.push(beneficios[i]['descricao']);
+    data_grap.push(beneficios[i]['total']);
+}
+
+const ctx_beneficios = document.getElementById('myChart_beneficios').getContext('2d');
+const myChartBeneficios = new Chart(ctx_beneficios, {
+    type: 'pie',
+    data: {
+        labels: labels_grap,
+        datasets: [{
+            label: 'Beneficios',
+            data: data_grap,
+            backgroundColor: [
+                'rgba(255, 99, 132, 1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(75, 192, 192, 1)',
+                'rgba(153, 102, 255, 1)',
+                'rgba(180, 180, 64, 1)'
+            ]
+        }]
+    },
+});
+
 
 function alterarAno() {
     var ano = $('#cb_ano').val();
@@ -154,8 +198,8 @@ function alterarAno() {
         dataType: "json",
         success: function(response) {
         // recebido a lista com sucesso, é necessário limpar a tabela e reinserir toda a lista
-            console.log(myChart.data.labels);
-            console.log(myChart.data.datasets[0].data);
+            console.log(myChartCestas.data.labels);
+            console.log(myChartCestas.data.datasets[0].data);
             
             labels_grap = []
             data_grap = []
@@ -165,9 +209,9 @@ function alterarAno() {
                 data_grap.push(response['dados'][i]['count']);
             }            
 
-            myChart.data.labels = labels_grap;
-            myChart.data.datasets[0].data = data_grap;
-            myChart.update();
+            myChartCestas.data.labels = labels_grap;
+            myChartCestas.data.datasets[0].data = data_grap;
+            myChartCestas.update();
 
         },
         error: function(err) {

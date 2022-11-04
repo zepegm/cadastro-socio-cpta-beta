@@ -114,7 +114,9 @@ GROUP BY DATE_TRUNC('month',data_retirada) ORDER BY DATE_TRUNC('month',data_reti
         
         dados = banco.consultarDict(codigosql)
 
-        return render_template('estatisticas.jinja', anos=anos, dados=dados)
+        beneficios = banco.consultarDict('select beneficio.descricao, count(id_cidadao) as total from cidadao_x_beneficios INNER JOIN beneficio ON beneficio.id = cidadao_x_beneficios.id_beneficio group by beneficio.descricao')
+
+        return render_template('estatisticas.jinja', anos=anos, dados=dados, beneficios=beneficios)
     else:
         return render_template('index.html', msg='')
 
