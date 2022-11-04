@@ -4,6 +4,7 @@ from flask import Flask, render_template, request, redirect, url_for, session, j
 from flask_mysqldb import MySQL
 from cep import retornarCEP
 from datetime import date
+import math
 import json
 
 app=Flask(__name__)
@@ -23,6 +24,10 @@ cred = {'HOST':'ec2-34-197-84-74.compute-1.amazonaws.com', 'PORT':5432, 'USER':'
 # Intialize MySQL
 mysql = MySQL(app)
 banco = Conexao(cred)
+
+def round_up(n, decimals=0):
+    multiplier = 10 ** decimals
+    return math.ceil(n * multiplier) / multiplier
 
 def popularCombo(tabela):
     valores = banco.consultar('select * from ' + tabela)
@@ -116,7 +121,10 @@ GROUP BY DATE_TRUNC('month',data_retirada) ORDER BY DATE_TRUNC('month',data_reti
 
         beneficios = banco.consultarDict('select beneficio.descricao, count(id_cidadao) as total from cidadao_x_beneficios INNER JOIN beneficio ON beneficio.id = cidadao_x_beneficios.id_beneficio group by beneficio.descricao')
 
-        return render_template('estatisticas.jinja', anos=anos, dados=dados, beneficios=beneficios)
+        cidadaos_mes = banco.consultar("select count(distinct id_cidadao) as total from retirada_cesta where data_retirada >= date_trunc('month', CURRENT_DATE)")[0][0]
+        total_cidados = banco.consultar("select count(id) from cidadao")[0][0]
+
+        return render_template('estatisticas.jinja', anos=anos, dados=dados, beneficios=beneficios, cidadaos_mes=cidadaos_mes, total_cidados=total_cidados)
     else:
         return render_template('index.html', msg='')
 

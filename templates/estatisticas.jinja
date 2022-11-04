@@ -97,6 +97,10 @@
                 <p class="title">Retiradas por mês:</p>
                 <canvas id="myChart_cestas_retiradas_ano" width="300" height="300"></canvas>     
             </div>
+            <div class="col-sm-4">
+                <p class="title">Retiradas no mês atual:</p>
+                <canvas id="myChart_mes_atual" width="300" height="300"></canvas>     
+            </div>            
         </div>            
         </div>
         
@@ -186,6 +190,41 @@ const myChartBeneficios = new Chart(ctx_beneficios, {
     },
 });
 
+var data = [{
+    data: [{{cidadaos_mes}}, {{total_cidados}}],
+    labels: ["Retirou", "Não retirou"],
+    backgroundColor: [
+        'rgba(54, 162, 235, 0.5)',
+        'rgba(0, 0, 0, 0.5)'
+    ],
+    borderColor: "#fff"
+}];
+
+const ctx_mes_atual = document.getElementById('myChart_mes_atual').getContext('2d');
+const myChartMesAtual = new Chart(ctx_mes_atual, {
+    type: 'pie',
+    data: {
+        datasets: data
+    },
+    options: {
+    tooltips: {
+        enabled: true
+    },
+    plugins: {
+        datalabels: {
+            formatter: (value, ctx_mes_atual) => {
+
+                let sum = ctx_mes_atual.dataset._meta[0].total;
+                let percentage = (value * 100 / sum).toFixed(2) + "%";
+                console.log(percentage)
+                return percentage;               
+
+            },
+            color: '#fff',
+        }
+    }
+    }
+});
 
 function alterarAno() {
     var ano = $('#cb_ano').val();
