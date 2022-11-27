@@ -120,11 +120,14 @@ GROUP BY DATE_TRUNC('month',data_retirada) ORDER BY DATE_TRUNC('month',data_reti
         dados = banco.consultarDict(codigosql)
 
         beneficios = banco.consultarDict('select beneficio.descricao, count(id_cidadao) as total from cidadao_x_beneficios INNER JOIN beneficio ON beneficio.id = cidadao_x_beneficios.id_beneficio group by beneficio.descricao')
+        tipo_imovel = banco.consultarDict('select tipo_imovel.descricao, count(cidadao.id) as total from cidadao INNER JOIN tipo_imovel ON cidadao.tipo_imovel = tipo_imovel.id group by tipo_imovel.descricao')
+        raca = banco.consultarDict('select raca_cor.descricao, count(cidadao.id) as total from cidadao INNER JOIN raca_cor ON cidadao.raca = raca_cor.id group by raca_cor.descricao')
+        escolaridade = banco.consultarDict('select escolaridade.descricao, count(cidadao.id) as total from cidadao INNER JOIN escolaridade ON cidadao.escolaridade = escolaridade.id group by escolaridade.descricao')
 
         cidadaos_mes = banco.consultar("select count(distinct id_cidadao) as total from retirada_cesta where data_retirada >= date_trunc('month', CURRENT_DATE)")[0][0]
         total_cidados = banco.consultar("select count(id) from cidadao")[0][0]
 
-        return render_template('estatisticas.jinja', anos=anos, dados=dados, beneficios=beneficios, cidadaos_mes=cidadaos_mes, total_cidados=total_cidados)
+        return render_template('estatisticas.jinja', anos=anos, dados=dados, beneficios=beneficios, cidadaos_mes=cidadaos_mes, total_cidados=total_cidados, tipo_imovel=tipo_imovel, raca=raca, escolaridade=escolaridade)
     else:
         return render_template('index.html', msg='')
 

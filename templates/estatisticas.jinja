@@ -101,7 +101,23 @@
                 <p class="title">Retiradas no mês atual:</p>
                 <canvas id="myChart_mes_atual" width="300" height="300"></canvas>     
             </div>            
-        </div>            
+        </div>    
+        <hr>
+        <div class="row">
+            <div class="col-sm-4">
+                <p class="title">Cadastro por Tipo de imóvel:</p>
+                <canvas id="myChart_imovel" width="300" height="300"></canvas>     
+            </div>
+            <div class="col-sm-4">
+                <p class="title">Cadastro por Raça/Cor:</p>
+                <canvas id="myChart_raca" width="300" height="300"></canvas>     
+            </div>
+            <div class="col-sm-4">
+                <p class="title">Cadastro por Escolaridade:</p>
+                <canvas id="myChart_escolaridade" width="300" height="300"></canvas>     
+            </div>            
+        </div>           
+
         </div>
         
     </main>
@@ -213,7 +229,152 @@ const myChartBeneficios = new Chart(ctx_beneficios, {
       }
 });
 
-// começar testes
+// Tipo de imóvel
+tipo_imovel = {{tipo_imovel}};
+labels_grap = []
+data_grap = []
+
+for (var i = 0; i < tipo_imovel.length; i++) {
+    labels_grap.push(tipo_imovel[i]['descricao']);
+    data_grap.push(tipo_imovel[i]['total']);
+}
+
+const ctx_imovel = document.getElementById('myChart_imovel').getContext('2d');
+const myChartImovel = new Chart(ctx_imovel, {
+    type: 'doughnut',
+    data: {
+        labels: labels_grap,
+        datasets: [{
+            label: 'Tipo de imóvel:',
+            data: data_grap,
+            backgroundColor: [
+                'rgba(255, 99, 132, 1)',
+                'rgba(152, 244, 254, 1)',
+                'rgba(227, 108, 61, 1)',
+                'rgba(246, 233, 134, 1)',
+                'rgba(153, 102, 255, 1)',
+                'rgba(185, 249, 149, 1)'
+            ]
+        }]
+    },
+        options: {
+        plugins: {
+            //legend: false,
+            labels: [
+                {
+                    render: 'percentage',
+                    fontColor: ['white', 'black', 'white', 'black', 'white', 'black'],
+                    fontSize: 20
+                },
+                {
+                    render: 'label',
+                    fontColor: 'black',
+                    //fontSize: 20
+                    arc: true,
+                    position: 'outside'
+                }
+            ]
+        }
+      }
+});
+
+// raca
+raca = {{raca}};
+labels_grap = []
+data_grap = []
+
+for (var i = 0; i < raca.length; i++) {
+    labels_grap.push(raca[i]['descricao']);
+    data_grap.push(raca[i]['total']);
+}
+
+const ctx_raca = document.getElementById('myChart_raca').getContext('2d');
+const myChartRaca = new Chart(ctx_raca, {
+    type: 'doughnut',
+    data: {
+        labels: labels_grap,
+        datasets: [{
+            label: 'Raça/Cor:',
+            data: data_grap,
+            backgroundColor: [
+                'rgba(255, 99, 132, 1)',
+                'rgba(152, 244, 254, 1)',
+                'rgba(227, 108, 61, 1)',
+                'rgba(246, 233, 134, 1)',
+                'rgba(153, 102, 255, 1)',
+                'rgba(185, 249, 149, 1)'
+            ]
+        }]
+    },
+        options: {
+        plugins: {
+            //legend: false,
+            labels: [
+                {
+                    render: 'percentage',
+                    fontColor: ['white', 'black', 'white', 'black', 'white', 'black'],
+                    fontSize: 20
+                },
+                {
+                    render: 'label',
+                    fontColor: 'black',
+                    //fontSize: 20
+                    arc: true,
+                    position: 'outside'
+                }
+            ]
+        }
+      }
+});
+
+// escolaridade
+escolaridade = {{escolaridade}};
+labels_grap = []
+data_grap = []
+
+for (var i = 0; i < escolaridade.length; i++) {
+    labels_grap.push(escolaridade[i]['descricao']);
+    data_grap.push(escolaridade[i]['total']);
+}
+
+const ctx_escolaridade = document.getElementById('myChart_escolaridade').getContext('2d');
+const myChartEscolaridade = new Chart(ctx_escolaridade, {
+    type: 'doughnut',
+    data: {
+        labels: labels_grap,
+        datasets: [{
+            label: 'Escolaridade:',
+            data: data_grap,
+            backgroundColor: [
+                'rgba(255, 99, 132, 1)',
+                'rgba(152, 244, 254, 1)',
+                'rgba(227, 108, 61, 1)',
+                'rgba(246, 233, 134, 1)',
+                'rgba(153, 102, 255, 1)',
+                'rgba(185, 249, 149, 1)'
+            ]
+        }]
+    },
+        options: {
+        plugins: {
+            //legend: false,
+            labels: [
+                {
+                    render: 'percentage',
+                    fontColor: ['white', 'black', 'white', 'black', 'white', 'black'],
+                    fontSize: 20
+                },
+                {
+                    render: 'label',
+                    fontColor: 'black',
+                    //fontSize: 20
+                    arc: true,
+                    position: 'outside'
+                }
+            ]
+        }
+      }
+});
 
 var data = [{
     data: [{{cidadaos_mes}}, {{total_cidados}}],
